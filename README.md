@@ -1,6 +1,8 @@
 # Welcome to CrowdControl
 
-An employee manager web app.
+![CrowdControl logo](assets/logo-full.png)
+
+An employee manager web app powered by Spring and React.
 
 ## About
 
