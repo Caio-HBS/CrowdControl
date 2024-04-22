@@ -1,10 +1,10 @@
 package com.caiohbs.crowdcontrol.payments;
 
-import com.caiohbs.crowdcontrol.users.User;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
+import com.caiohbs.crowdcontrol.user.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
 @Entity
 public class Payment {
@@ -12,9 +12,12 @@ public class Payment {
     @Id
     @GeneratedValue
     private Long paymentId;
-    @OneToOne
-    private User user;
+    @NotNull
+    @Positive
     private double paymentAmount;
+    @ManyToOne(fetch=FetchType.LAZY)
+    @JsonIgnore
+    private User user;
 
     public Payment() {
     }

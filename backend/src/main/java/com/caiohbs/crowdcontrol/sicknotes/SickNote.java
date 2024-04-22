@@ -1,10 +1,10 @@
 package com.caiohbs.crowdcontrol.sicknotes;
 
-import com.caiohbs.crowdcontrol.users.User;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
+import com.caiohbs.crowdcontrol.user.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 @Entity
 public class SickNote {
@@ -12,17 +12,20 @@ public class SickNote {
     @Id
     @GeneratedValue
     private long sickNoteId;
-    @OneToOne
+    @NotNull
+    @Size(min=10, max=100)
+    private String sickNoteTitle;
+    @ManyToOne(fetch=FetchType.LAZY)
+    @JsonIgnore
     private User user;
-    private String noteNoteTitle;
 
     public SickNote() {
     }
 
-    public SickNote(long sickNoteId, User user, String noteNoteTitle) {
+    public SickNote(long sickNoteId, User user, String sickNoteTitle) {
         this.sickNoteId = sickNoteId;
         this.user = user;
-        this.noteNoteTitle = noteNoteTitle;
+        this.sickNoteTitle = sickNoteTitle;
     }
 
     public long getSickNoteId() {
@@ -42,11 +45,11 @@ public class SickNote {
     }
 
     public String getNoteNoteTitle() {
-        return noteNoteTitle;
+        return sickNoteTitle;
     }
 
-    public void setNoteNoteTitle(String noteNoteTitle) {
-        this.noteNoteTitle = noteNoteTitle;
+    public void setNoteNoteTitle(String sickNoteTitle) {
+        this.sickNoteTitle = sickNoteTitle;
     }
 
     @Override
@@ -54,7 +57,7 @@ public class SickNote {
         return "SickNote{" +
                "sickNoteId=" + sickNoteId +
                ", user=" + user +
-               ", noteNoteTitle='" + noteNoteTitle + '\'' +
+               ", noteNoteTitle='" + sickNoteTitle + '\'' +
                '}';
     }
 

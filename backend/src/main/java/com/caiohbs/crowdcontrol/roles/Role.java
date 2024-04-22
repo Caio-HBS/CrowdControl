@@ -1,8 +1,9 @@
 package com.caiohbs.crowdcontrol.roles;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import com.caiohbs.crowdcontrol.user.User;
+import jakarta.persistence.*;
+
+import java.util.List;
 
 @Entity
 public class Role {
@@ -13,15 +14,22 @@ public class Role {
     private String roleName;
     private int maxNumberOfUsers;
     private int salary;
+    @ElementCollection(targetClass=Permission.class)
+    @Enumerated(EnumType.STRING)
+    private List<Permission> permissions;
+    @OneToMany(mappedBy="userId")
+    private List<User> users;
 
     public Role() {
     }
 
-    public Role(String roleName, int maxNumberOfUsers, int salary, Long roleId) {
+    public Role(Long roleId, String roleName, int maxNumberOfUsers, int salary, List<Permission> permissions, List<User> users) {
+        this.roleId = roleId;
         this.roleName = roleName;
         this.maxNumberOfUsers = maxNumberOfUsers;
         this.salary = salary;
-        this.roleId = roleId;
+        this.permissions = permissions;
+        this.users = users;
     }
 
     public Long getRoleId() {
@@ -56,13 +64,31 @@ public class Role {
         this.salary = salary;
     }
 
+    public List<Permission> getPermissions() {
+        return permissions;
+    }
+
+    public void setPermissions(List<Permission> permissions) {
+        this.permissions = permissions;
+    }
+
+    public List<User> getUsers() {
+        return users;
+    }
+
+    public void setUser(List<User> users) {
+        this.users = users;
+    }
+
     @Override
     public String toString() {
         return "Role{" +
                "roleId=" + roleId +
                ", roleName='" + roleName + '\'' +
                ", maxNumberOfUsers=" + maxNumberOfUsers +
-               ", sallary=" + salary +
+               ", salary=" + salary +
+               ", permissions=" + permissions +
+               ", user=" + users +
                '}';
     }
 }
