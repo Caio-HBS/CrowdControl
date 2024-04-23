@@ -1,5 +1,6 @@
 package com.caiohbs.crowdcontrol.user;
 
+import com.caiohbs.crowdcontrol.roles.Permission;
 import com.caiohbs.crowdcontrol.roles.Role;
 import com.caiohbs.crowdcontrol.sicknotes.SickNote;
 import com.caiohbs.crowdcontrol.payments.Payment;
@@ -7,11 +8,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import org.springframework.security.core.GrantedAuthority;
-//import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 @Entity
@@ -70,15 +73,16 @@ public class User implements UserDetails {
         this.role = role;
     }
 
-//    @Override
-//    public Collection<? extends GrantedAuthority> getAuthorities() {
-//        return List.of(new SimpleGrantedAuthority(role.getPermissions()));
-//    }
-
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        List<Permission> permissionsList = role.getPermissions();
+        List<GrantedAuthority> authorities = new ArrayList<>(List.of());
+
+        for (Permission permission : permissionsList) {
+            authorities.add(new SimpleGrantedAuthority(permission.name()));
+        }
+
+        return authorities;
     }
 
     @Override
