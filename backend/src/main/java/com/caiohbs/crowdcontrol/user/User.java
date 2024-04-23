@@ -21,25 +21,24 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue
     private Long userId;
-    @NotNull
+    @NotNull(message="field 'firstName' may not be null")
     @Size(min=1, max=50, message="field 'first_name' has to be between 1 and 50 characters")
     private String firstName;
-    @NotNull
+    @NotNull(message="field 'lastName' may not be null")
     @Size(min=1, max=50, message="field 'last_name' has to be between 1 and 50 characters")
     private String lastName;
-    @NotNull
-    @Email
-    @Size(min=1, max=100, message="field 'email' has to be between 1 and 100 characters and be a valid e-mail")
+    @NotNull(message="field 'username' may not be null")
+    @Email(message="field 'username' has to be a valid email")
+    @Size(min=1, max=100, message="field 'email' has to be between 1 and 100 characters")
     private String email;
-    @NotNull
+    @NotNull(message="field 'password' may not be null")
     @Size(min=1, max=20, message="field 'password' has to be between 1 and 20 characters")
     private String password;
-    @NotNull
-    @Past
+    @NotNull(message="field 'birthDate' may not be null")
+    @Past(message="field 'birthDate' has to be a past date")
     private LocalDate birthDate;
-    @NotNull
-    @JsonIgnore
-    @FutureOrPresent
+    @NotNull(message="field 'registerDate' may not be null")
+    @FutureOrPresent(message="field 'registerDate' has to be the present date")
     private LocalDate registerDate;
     @OneToMany(mappedBy="user")
     @JsonIgnore
