@@ -50,7 +50,6 @@ public class User implements UserDetails {
     @JsonIgnore
     private List<SickNote> sickNotes;
     @ManyToOne
-    @JsonIgnore
     private Role role;
 
     public User() {
@@ -75,11 +74,11 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        List<Permission> permissionsList = role.getPermissions();
+        List<String> permissionsList = role.getPermissions();
         List<GrantedAuthority> authorities = new ArrayList<>(List.of());
 
-        for (Permission permission : permissionsList) {
-            authorities.add(new SimpleGrantedAuthority(permission.name()));
+        for (String permission : permissionsList) {
+            authorities.add(new SimpleGrantedAuthority(permission));
         }
 
         return authorities;

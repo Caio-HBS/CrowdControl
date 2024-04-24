@@ -3,7 +3,10 @@ package com.caiohbs.crowdcontrol.roles;
 import com.caiohbs.crowdcontrol.user.User;
 import jakarta.persistence.*;
 
+import java.util.EnumSet;
 import java.util.List;
+
+import static jakarta.persistence.FetchType.EAGER;
 
 @Entity
 public class Role {
@@ -13,17 +16,19 @@ public class Role {
     private Long roleId;
     private String roleName;
     private int maxNumberOfUsers;
-    private int salary;
-    @ElementCollection(targetClass=Permission.class)
+    private double salary;
+    @ElementCollection(fetch=EAGER)
     @Enumerated(EnumType.STRING)
-    private List<Permission> permissions;
-    @OneToMany(mappedBy="userId")
+    @CollectionTable(name = "role_permissions")
+    @Column(name = "permission")
+    private List<String> permissions;
+    @OneToMany(mappedBy="userId", fetch=EAGER)
     private List<User> users;
 
     public Role() {
     }
 
-    public Role(Long roleId, String roleName, int maxNumberOfUsers, int salary, List<Permission> permissions, List<User> users) {
+    public Role(Long roleId, String roleName, int maxNumberOfUsers, double salary, List<String> permissions, List<User> users) {
         this.roleId = roleId;
         this.roleName = roleName;
         this.maxNumberOfUsers = maxNumberOfUsers;
@@ -56,7 +61,7 @@ public class Role {
         this.maxNumberOfUsers = maxNumberOfUsers;
     }
 
-    public int getSalary() {
+    public double getSalary() {
         return salary;
     }
 
@@ -64,11 +69,16 @@ public class Role {
         this.salary = salary;
     }
 
-    public List<Permission> getPermissions() {
+    public List<String> getPermissions() {
         return permissions;
     }
 
-    public void setPermissions(List<Permission> permissions) {
+    public void setPermissions(List<String> permissions) {
+//        for (String permission : permissions) {
+//            if (!EnumSet.allOf(Permission.class).contains(permission)) {
+//                throw new IllegalArgumentException("Permission " + permission + " is not valid");
+//            }
+//        }
         this.permissions = permissions;
     }
 
