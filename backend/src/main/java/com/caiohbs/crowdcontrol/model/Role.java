@@ -1,12 +1,11 @@
-package com.caiohbs.crowdcontrol.roles;
+package com.caiohbs.crowdcontrol.model;
 
-import com.caiohbs.crowdcontrol.user.User;
 import jakarta.persistence.*;
 
-import java.util.EnumSet;
-import java.util.List;
+import java.util.*;
 
 import static jakarta.persistence.FetchType.EAGER;
+import static jakarta.persistence.FetchType.LAZY;
 
 @Entity
 public class Role {
@@ -14,6 +13,7 @@ public class Role {
     @Id
     @GeneratedValue
     private Long roleId;
+    // TODO: make this unique.
     private String roleName;
     private int maxNumberOfUsers;
     private double salary;
@@ -22,7 +22,7 @@ public class Role {
     @CollectionTable(name = "role_permissions")
     @Column(name = "permission")
     private List<String> permissions;
-    @OneToMany(mappedBy="userId", fetch=EAGER)
+    @OneToMany(mappedBy="userId", fetch=LAZY)
     private List<User> users;
 
     public Role() {
@@ -74,12 +74,16 @@ public class Role {
     }
 
     public void setPermissions(List<String> permissions) {
-//        for (String permission : permissions) {
-//            if (!EnumSet.allOf(Permission.class).contains(permission)) {
-//                throw new IllegalArgumentException("Permission " + permission + " is not valid");
-//            }
-//        }
-        this.permissions = permissions;
+        List<String> validPermissions = new ArrayList<>();
+        for (String permission : permissions) {
+            try {
+                Permission.valueOf(permission.toUpperCase());
+                validPermissions.add(permission);
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException("Invalid permission: " + permission);
+            }
+        }
+        this.permissions = validPermissions;
     }
 
     public List<User> getUsers() {

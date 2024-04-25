@@ -1,6 +1,5 @@
-package com.caiohbs.crowdcontrol.payments;
+package com.caiohbs.crowdcontrol.model;
 
-import com.caiohbs.crowdcontrol.user.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;

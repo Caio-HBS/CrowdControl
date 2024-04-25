@@ -1,9 +1,5 @@
-package com.caiohbs.crowdcontrol.user;
+package com.caiohbs.crowdcontrol.model;
 
-import com.caiohbs.crowdcontrol.roles.Permission;
-import com.caiohbs.crowdcontrol.roles.Role;
-import com.caiohbs.crowdcontrol.sicknotes.SickNote;
-import com.caiohbs.crowdcontrol.payments.Payment;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -14,7 +10,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 @Entity
@@ -49,6 +44,7 @@ public class User implements UserDetails {
     @OneToMany(mappedBy="user")
     @JsonIgnore
     private List<SickNote> sickNotes;
+    @JsonIgnore
     @ManyToOne
     private Role role;
 
@@ -74,13 +70,17 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
+        if (this.role == null) {
+            return List.of();
+        }
+
         List<String> permissionsList = role.getPermissions();
         List<GrantedAuthority> authorities = new ArrayList<>(List.of());
 
         for (String permission : permissionsList) {
             authorities.add(new SimpleGrantedAuthority(permission));
         }
-
+        System.out.println(authorities);
         return authorities;
     }
 

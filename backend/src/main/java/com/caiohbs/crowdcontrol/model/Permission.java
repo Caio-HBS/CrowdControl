@@ -1,4 +1,4 @@
-package com.caiohbs.crowdcontrol.roles;
+package com.caiohbs.crowdcontrol.model;
 
 public enum Permission {
 
