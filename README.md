@@ -1,5 +1,12 @@
 # Welcome to CrowdControl
 
+### Language selection
+
+[![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/Caio-HBS/CrowdControl/blob/main/README.md)
+[![pt-br](https://img.shields.io/badge/lang-pt--br-green.svg)](https://github.com/Caio-HBS/CrowdControl/blob/main/README-pt-br.md)
+
+---
+
 ![CrowdControl logo](assets/logo-full.png)
 
 An employee manager web app powered by Spring and React.
