@@ -45,8 +45,10 @@ public class User implements UserDetails {
     @JsonIgnore
     private List<SickNote> sickNotes;
     @JsonIgnore
-    @ManyToOne
+    @ManyToOne(fetch=FetchType.EAGER)
     private Role role;
+    private boolean isEnabled;
+    private boolean isAccountNonLocked;
 
     public User() {
     }
@@ -66,6 +68,8 @@ public class User implements UserDetails {
         this.payments = payments;
         this.sickNotes = sickNotes;
         this.role = role;
+        this.isEnabled = false;
+        this.isAccountNonLocked = false;
     }
 
     @Override
@@ -176,6 +180,10 @@ public class User implements UserDetails {
         return false;
     }
 
+    public void setIsAccountNonLocked(boolean isAccountNonLocked) {
+        this.isAccountNonLocked = isAccountNonLocked;
+    }
+
     @Override
     public boolean isCredentialsNonExpired() {
         return false;
@@ -184,6 +192,10 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return false;
+    }
+
+    public void setIsEnabled(boolean isEnabled) {
+        this.isEnabled = isEnabled;
     }
 
     @Override

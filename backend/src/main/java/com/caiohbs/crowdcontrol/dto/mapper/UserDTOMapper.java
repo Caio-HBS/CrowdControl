@@ -12,6 +12,8 @@ import java.util.stream.Collectors;
 public class UserDTOMapper implements Function<User, UserDTO> {
     @Override
     public UserDTO apply(User user) {
+        String roleName = user.getRole() != null ? user.getRole().getRoleName() : "";
+
         return new UserDTO(
                 user.getUserId(),
                 user.getUsername(),
@@ -21,6 +23,7 @@ public class UserDTOMapper implements Function<User, UserDTO> {
                 user.getRegisterDate(),
                 user.isEnabled(),
                 user.isAccountNonLocked(),
+                roleName,
                 user.getAuthorities()
                         .stream()
                         .map(GrantedAuthority::getAuthority)
