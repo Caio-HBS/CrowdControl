@@ -4,9 +4,7 @@ import com.caiohbs.crowdcontrol.dto.UserDTO;
 import com.caiohbs.crowdcontrol.dto.UserUpdateDTO;
 import com.caiohbs.crowdcontrol.dto.mapper.UserDTOMapper;
 import com.caiohbs.crowdcontrol.model.User;
-import com.caiohbs.crowdcontrol.repository.RoleRepository;
 import com.caiohbs.crowdcontrol.repository.UserRepository;
-import com.caiohbs.crowdcontrol.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,23 +21,17 @@ public class UserController {
 
     private final UserDTOMapper userDTOMapper;
     private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
-    private final UserService userService;
 
     public UserController(
             UserRepository userRepository,
-            UserDTOMapper userDTOMapper,
-            RoleRepository roleRepository,
-            UserService userService
+            UserDTOMapper userDTOMapper
     ) {
         this.userRepository = userRepository;
         this.userDTOMapper = userDTOMapper;
-        this.roleRepository = roleRepository;
-        this.userService = userService;
     }
 
     @GetMapping(path="/users")
-    public List<UserDTO> getUsers() {
+    public List<UserDTO> getUsersList() {
 
         return userRepository.findAll()
                 .stream()
@@ -47,18 +39,17 @@ public class UserController {
                 .collect(Collectors.toList());
     }
 
+    @GetMapping(path="/users/{pathId}")
+    public Optional<UserDTO> getSingleUser(@PathVariable Long pathId) {
+
+        return userRepository.findById(pathId).map(userDTOMapper);
+    }
+
     @PostMapping(path="/users")
     public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
         User savedUser = userRepository.save(user);
 
         return ResponseEntity.ok(user);
-    }
-
-
-    @GetMapping(path="/users/{pathId}")
-    public Optional<UserDTO> getSingleUser(@PathVariable Long pathId) {
-
-        return userRepository.findById(pathId).map(userDTOMapper);
     }
 
     @PutMapping(path="/users/{id}")
