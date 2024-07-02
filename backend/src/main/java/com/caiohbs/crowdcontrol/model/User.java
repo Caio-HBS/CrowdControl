@@ -3,6 +3,7 @@ package com.caiohbs.crowdcontrol.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -35,7 +36,8 @@ public class User implements UserDetails {
     @NotNull(message="field 'birthDate' may not be null")
     @Past(message="field 'birthDate' has to be a past date")
     private LocalDate birthDate;
-    @NotNull(message="field 'registerDate' may not be null")
+    @JsonIgnore
+    @CreatedDate
     @FutureOrPresent(message="field 'registerDate' has to be the present date")
     private LocalDate registerDate;
     @OneToMany(mappedBy="user")
@@ -54,8 +56,8 @@ public class User implements UserDetails {
     }
 
     public User(
-            Long userId, String firstName, String lastName, String email,
-            String password, LocalDate birthDate, LocalDate registerDate,
+            Long userId, String firstName, String lastName,
+            String email, String password, LocalDate birthDate, LocalDate localDate,
             List<Payment> payments, List<SickNote> sickNotes, Role role
     ) {
         this.userId = userId;
@@ -64,12 +66,17 @@ public class User implements UserDetails {
         this.email = email;
         this.password = password;
         this.birthDate = birthDate;
-        this.registerDate = registerDate;
+        this.registerDate = localDate;
         this.payments = payments;
         this.sickNotes = sickNotes;
         this.role = role;
         this.isEnabled = false;
         this.isAccountNonLocked = false;
+    }
+
+    @PrePersist
+    public void prePersist() {
+        this.registerDate = LocalDate.now();
     }
 
     @Override
