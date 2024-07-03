@@ -21,19 +21,18 @@ public class Role {
     @CollectionTable(name="role_permissions")
     @Column(name="permission")
     private List<String> permissions;
-    @OneToMany(mappedBy="userId", fetch=EAGER)
-    private List<User> users;
 
     public Role() {
     }
 
-    public Role(Long roleId, String roleName, int maxNumberOfUsers, double salary, List<String> permissions, List<User> users) {
+    public Role(Long roleId, String roleName, int maxNumberOfUsers,
+                double salary, List<String> permissions
+    ) {
         this.roleId = roleId;
         this.roleName = roleName;
         this.maxNumberOfUsers = maxNumberOfUsers;
         this.salary = salary;
         this.permissions = permissions;
-        this.users = users;
     }
 
     public Long getRoleId() {
@@ -85,14 +84,6 @@ public class Role {
         this.permissions = validPermissions;
     }
 
-    public List<User> getUsers() {
-        return users;
-    }
-
-    public void setUser(List<User> users) {
-        this.users = users;
-    }
-
     @Override
     public String toString() {
         return "Role{" +
@@ -101,7 +92,6 @@ public class Role {
                ", maxNumberOfUsers=" + maxNumberOfUsers +
                ", salary=" + salary +
                ", permissions=" + permissions +
-               ", user=" + users +
                '}';
     }
 }
