@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 import java.util.*;
 
 import static jakarta.persistence.FetchType.EAGER;
-import static jakarta.persistence.FetchType.LAZY;
 
 @Entity
 public class Role {
@@ -13,16 +12,16 @@ public class Role {
     @Id
     @GeneratedValue
     private Long roleId;
-    // TODO: make this unique.
+    @Column(unique=true)
     private String roleName;
     private int maxNumberOfUsers;
     private double salary;
     @ElementCollection(fetch=EAGER)
     @Enumerated(EnumType.STRING)
-    @CollectionTable(name = "role_permissions")
-    @Column(name = "permission")
+    @CollectionTable(name="role_permissions")
+    @Column(name="permission")
     private List<String> permissions;
-    @OneToMany(mappedBy="userId", fetch=LAZY)
+    @OneToMany(mappedBy="userId", fetch=EAGER)
     private List<User> users;
 
     public Role() {

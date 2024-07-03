@@ -40,10 +40,10 @@ public class User implements UserDetails {
     @CreatedDate
     @FutureOrPresent(message="field 'registerDate' has to be the present date")
     private LocalDate registerDate;
-    @OneToMany(mappedBy="user")
-    @JsonIgnore
+    @OneToMany(mappedBy="user", fetch=FetchType.EAGER)
+    @JsonIgnore()
     private List<Payment> payments;
-    @OneToMany(mappedBy="user")
+    @OneToMany(mappedBy="user", fetch=FetchType.EAGER)
     @JsonIgnore
     private List<SickNote> sickNotes;
     @JsonIgnore
@@ -91,7 +91,6 @@ public class User implements UserDetails {
         for (String permission : permissionsList) {
             authorities.add(new SimpleGrantedAuthority(permission));
         }
-        System.out.println(authorities);
         return authorities;
     }
 
@@ -198,7 +197,7 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return false;
+        return isEnabled;
     }
 
     public void setIsEnabled(boolean isEnabled) {
@@ -212,7 +211,6 @@ public class User implements UserDetails {
                ", firstName='" + firstName + '\'' +
                ", lastName='" + lastName + '\'' +
                ", email='" + email + '\'' +
-               ", password='" + password + '\'' +
                ", birthDate=" + birthDate +
                ", registerDate=" + registerDate +
                ", payments=" + payments +
