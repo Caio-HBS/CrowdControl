@@ -1,7 +1,5 @@
 package com.caiohbs.crowdcontrol.dto;
 
-import com.caiohbs.crowdcontrol.model.Role;
-
 public record UserUpdateDTO(
         String username,
         boolean isUsernamePresent,
@@ -11,7 +9,7 @@ public record UserUpdateDTO(
         boolean isNewPasswordPresent,
 
         boolean isRolesPresent,
-        Role role,
+        String role,
 
         boolean isEnabled,
         boolean isChangeEnabledPresent,

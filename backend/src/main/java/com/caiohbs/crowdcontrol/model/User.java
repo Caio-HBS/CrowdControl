@@ -7,6 +7,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -27,19 +28,18 @@ public class User implements UserDetails {
     @NotNull(message="field 'username' may not be null")
     @Email(message="field 'username' has to be a valid email")
     @Size(min=1, max=100, message="field 'email' has to be between 1 and 100 characters")
+    @Column(unique=true)
     private String email;
     @NotNull(message="field 'password' may not be null")
-    @Size(min=1, max=20, message="field 'password' has to be between 1 and 20 characters")
     private String password;
     @NotNull(message="field 'birthDate' may not be null")
     @Past(message="field 'birthDate' has to be a past date")
     private LocalDate birthDate;
     @JsonIgnore
     @CreatedDate
-    @FutureOrPresent(message="field 'registerDate' has to be the present date")
     private LocalDate registerDate;
     @OneToMany(mappedBy="user", fetch=FetchType.EAGER)
-    @JsonIgnore()
+    @JsonIgnore
     private List<Payment> payments;
     @OneToMany(mappedBy="user", fetch=FetchType.EAGER)
     @JsonIgnore
@@ -54,22 +54,31 @@ public class User implements UserDetails {
     }
 
     public User(
-            Long userId, String firstName, String lastName,
-            String email, String password, LocalDate birthDate, LocalDate localDate,
+            Long userId, String firstName, String lastName, String email,
+            String password, LocalDate birthDate, LocalDate localDate,
             List<Payment> payments, List<SickNote> sickNotes, Role role
     ) {
+
+
         this.userId = userId;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
-        this.password = password;
+        this.password = encryptPass(password);
         this.birthDate = birthDate;
         this.registerDate = localDate;
         this.payments = payments;
         this.sickNotes = sickNotes;
         this.role = role;
         this.isEnabled = false;
-        this.isAccountNonLocked = false;
+        this.isAccountNonLocked = true;
+    }
+
+    public String encryptPass(String password) {
+
+        BCryptPasswordEncoder encrypt = new BCryptPasswordEncoder();
+        return encrypt.encode(password);
+
     }
 
     @PrePersist
@@ -98,7 +107,7 @@ public class User implements UserDetails {
     }
 
     public void setPassword(String password) {
-        this.password = password;
+        this.password = encryptPass(password);
     }
 
     @Override
@@ -181,7 +190,7 @@ public class User implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return false;
+        return isAccountNonLocked;
     }
 
     public void setIsAccountNonLocked(boolean isAccountNonLocked) {
