@@ -58,13 +58,11 @@ public class User implements UserDetails {
             String password, LocalDate birthDate, LocalDate localDate,
             List<Payment> payments, List<SickNote> sickNotes, Role role
     ) {
-
-
         this.userId = userId;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
-        this.password = encryptPass(password);
+        this.password = password;
         this.birthDate = birthDate;
         this.registerDate = localDate;
         this.payments = payments;
@@ -72,13 +70,6 @@ public class User implements UserDetails {
         this.role = role;
         this.isEnabled = false;
         this.isAccountNonLocked = true;
-    }
-
-    public String encryptPass(String password) {
-
-        BCryptPasswordEncoder encrypt = new BCryptPasswordEncoder();
-        return encrypt.encode(password);
-
     }
 
     @PrePersist
@@ -225,4 +216,12 @@ public class User implements UserDetails {
                ", role=" + role +
                '}';
     }
+
+    public String encryptPass(String password) {
+
+        BCryptPasswordEncoder encrypt = new BCryptPasswordEncoder();
+        return encrypt.encode(password);
+
+    }
+
 }

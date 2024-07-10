@@ -3,10 +3,12 @@ package com.caiohbs.crowdcontrol.controller;
 import com.caiohbs.crowdcontrol.dto.UserDTO;
 import com.caiohbs.crowdcontrol.dto.UserUpdateDTO;
 import com.caiohbs.crowdcontrol.dto.mapper.UserDTOMapper;
+import com.caiohbs.crowdcontrol.exception.RoleLimitExceededException;
 import com.caiohbs.crowdcontrol.model.Role;
 import com.caiohbs.crowdcontrol.model.User;
 import com.caiohbs.crowdcontrol.repository.RoleRepository;
 import com.caiohbs.crowdcontrol.repository.UserRepository;
+import com.caiohbs.crowdcontrol.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,13 +25,17 @@ public class UserController {
 
     private final UserDTOMapper userDTOMapper;
     private final UserRepository userRepository;
+    private final UserService userService;
     private final RoleRepository roleRepository;
 
     public UserController(
             UserRepository userRepository,
-            UserDTOMapper userDTOMapper, RoleRepository roleRepository
+            UserService userService,
+            UserDTOMapper userDTOMapper,
+            RoleRepository roleRepository
     ) {
         this.userRepository = userRepository;
+        this.userService = userService;
         this.userDTOMapper = userDTOMapper;
         this.roleRepository = roleRepository;
     }
@@ -45,8 +51,7 @@ public class UserController {
     public ResponseEntity<List<UserDTO>> getUsersList() {
 
         List<UserDTO> users = userRepository.findAll()
-                .stream()
-                .map(userDTOMapper)
+                .stream().map(userDTOMapper)
                 .collect(Collectors.toList());
 
         if (users.isEmpty()) {
@@ -90,8 +95,7 @@ public class UserController {
     @PostMapping(path="/users")
     public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
 
-        try {
-            User savedUser = userRepository.save(user);
+        User savedUser = userService.createUser(user);
 
             URI uri = ServletUriComponentsBuilder
                     .fromCurrentRequest()
@@ -99,10 +103,6 @@ public class UserController {
                     .buildAndExpand(savedUser.getUserId())
                     .toUri();
             return ResponseEntity.created(uri).build();
-        } catch (Exception e) {
-            // TODO: gracefully handle this.
-            return ResponseEntity.badRequest().build();
-        }
 
     }
 
@@ -143,12 +143,14 @@ public class UserController {
                 foundUser.setPassword(updatedUserDTO.newPassword());
             }
             if (updatedUserDTO.isRolesPresent()) {
-                Role foundRole = roleRepository.findByRoleName(updatedUserDTO.role().toUpperCase());
+                Role foundRole = roleRepository.findByRoleName(
+                        updatedUserDTO.role().toUpperCase()
+                );
 
-                foundUser.setRole(foundRole);
                 if (foundRole == null) {
                     return ResponseEntity.notFound().build();
                 }
+                userService.assignRole(foundUser, foundRole.getRoleId());
             }
             if (updatedUserDTO.isChangeEnabledPresent()) {
                 foundUser.setIsEnabled(updatedUserDTO.isEnabled());
@@ -165,9 +167,8 @@ public class UserController {
 
             return ResponseEntity.created(uri).build();
 
-        } catch (Exception e) {
-            // TODO: gracefully handle this.
-            return ResponseEntity.badRequest().build();
+        } catch (RoleLimitExceededException e) {
+            throw new RoleLimitExceededException(e.getMessage());
         }
 
     }
@@ -192,7 +193,7 @@ public class UserController {
         }
 
         userRepository.deleteById(id);
-        return ResponseEntity.ok("User deleted successfully");
+        return ResponseEntity.ok("User deleted successfully.");
     }
 
 }
