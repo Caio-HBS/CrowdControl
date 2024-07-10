@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 public class UserDTOMapper implements Function<User, UserDTO> {
     @Override
     public UserDTO apply(User user) {
-        String roleName = user.getRole() != null ? user.getRole().getRoleName() : "";
+        String roleName = user.getRole() != null ? user.getRole().getRoleName() : "NO_ROLE";
 
         return new UserDTO(
                 user.getUserId(),
