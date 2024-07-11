@@ -3,11 +3,9 @@ package com.caiohbs.crowdcontrol.controller;
 import com.caiohbs.crowdcontrol.dto.UserDTO;
 import com.caiohbs.crowdcontrol.dto.UserUpdateDTO;
 import com.caiohbs.crowdcontrol.dto.mapper.UserDTOMapper;
-import com.caiohbs.crowdcontrol.exception.RoleLimitExceededException;
-import com.caiohbs.crowdcontrol.model.Role;
+import com.caiohbs.crowdcontrol.exception.ResourceNotFoundException;
+import com.caiohbs.crowdcontrol.exception.UsernameTakenException;
 import com.caiohbs.crowdcontrol.model.User;
-import com.caiohbs.crowdcontrol.repository.RoleRepository;
-import com.caiohbs.crowdcontrol.repository.UserRepository;
 import com.caiohbs.crowdcontrol.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +14,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -24,23 +21,19 @@ import java.util.stream.Collectors;
 public class UserController {
 
     private final UserDTOMapper userDTOMapper;
-    private final UserRepository userRepository;
     private final UserService userService;
-    private final RoleRepository roleRepository;
 
     public UserController(
-            UserRepository userRepository,
             UserService userService,
-            UserDTOMapper userDTOMapper,
-            RoleRepository roleRepository
+            UserDTOMapper userDTOMapper
     ) {
-        this.userRepository = userRepository;
         this.userService = userService;
         this.userDTOMapper = userDTOMapper;
-        this.roleRepository = roleRepository;
     }
 
-//    TODO: add view to retrieve base info when logging in.
+    //TODO: add view to retrieve base info when logging in.
+//    @GetMapping(path="/first-hit")
+//    public ResponseEntity<> getFirstHit() {}
 
     /**
      * Retrieves a list of all users.
@@ -50,32 +43,27 @@ public class UserController {
     @GetMapping(path="/users")
     public ResponseEntity<List<UserDTO>> getUsersList() {
 
-        List<UserDTO> users = userRepository.findAll()
+        return ResponseEntity.ok(userService.retrieveAllUsers()
                 .stream().map(userDTOMapper)
-                .collect(Collectors.toList());
-
-        if (users.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(users);
+                .collect(Collectors.toList()));
 
     }
 
     /**
-     * Retrieves a single user based on ID tag.
+     * Retrieves a single user based on an ID tag.
      *
      * @param pathId The unique identifier (Long) of the user to be retrieved.
-     *
      * @return containing a {@link UserDTO} object representing the found user,
      * or a {@link ResponseEntity} with a 404 Not Found status code if no user
      * is found.
+     * @throws ResourceNotFoundException if the user is not found.
      */
     @GetMapping(path="/users/{pathId}")
     public ResponseEntity<UserDTO> getSingleUser(@PathVariable Long pathId) {
 
-        return userRepository.findById(pathId)
+        return userService.retrieveSingleUser(pathId)
                 .map(user -> ResponseEntity.ok(userDTOMapper.apply(user)))
-                .orElseGet(() -> ResponseEntity.notFound().build());
+                .orElseThrow(() -> new ResourceNotFoundException("User not found."));
 
     }
 
@@ -83,93 +71,50 @@ public class UserController {
      * Creates a new user.
      *
      * @param user The user object to be created. The object should be a valid
-     * {@link User} with all required fields populated.
-     *
+     *             {@link User} with all required fields populated.
      * @return A {@link ResponseEntity} with the according status code. 201
      * CREATED indicates creation of the resource. Any errors (including
      * validation) will result in a 400 BAD REQUEST. If the user was created
      * successfully, the response will include a Location header pointing to the
      * URI of the newly created user.
-     *
+     * @throws UsernameTakenException if the username (e-mail) is already in use.
      */
     @PostMapping(path="/users")
     public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
 
         User savedUser = userService.createUser(user);
 
-            URI uri = ServletUriComponentsBuilder
-                    .fromCurrentRequest()
-                    .path("/{id}")
-                    .buildAndExpand(savedUser.getUserId())
-                    .toUri();
-            return ResponseEntity.created(uri).build();
+        URI uri = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(savedUser.getUserId())
+                .toUri();
+        return ResponseEntity.created(uri).build();
 
     }
 
     /**
      * Updates an existing user.
      *
-     * @param id The unique identifier (Long) of the user to update.
+     * @param id             The unique identifier (Long) of the user to update.
      * @param updatedUserDTO The {@link UserUpdateDTO} object containing the
-     * update information for the user. Only fields
-     * present in the DTO will be updated.
-     *
+     *                       update information for the user. Only fields
+     *                       present in the DTO will be updated.
      * @return A {@link ResponseEntity} with the according status code. 200 OK
      * indicates the resource was updated successfully. 400 BAD REQUEST
      * indicates issues on request (including validation). 404 NOT FOUND
      * indicates the requested resource does not exist or couldn't be found. If
      * the user was updated successfully, the response will include a Location
      * header pointing to the URI of the newly updated user.
-     *
      */
     @PutMapping(path="/users/{id}")
     public ResponseEntity<String> updateUserById(
-            @RequestBody UserUpdateDTO updatedUserDTO,
+            @Valid @RequestBody UserUpdateDTO updatedUserDTO,
             @PathVariable Long id
     ) {
 
-        Optional<User> user = userRepository.findById(id);
-        if (user.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-
-        User foundUser = user.get();
-
-        try {
-            if (updatedUserDTO.isUsernamePresent()) {
-                foundUser.setUsername(updatedUserDTO.username());
-            }
-            if (updatedUserDTO.isNewPasswordPresent()) {
-                foundUser.setPassword(updatedUserDTO.newPassword());
-            }
-            if (updatedUserDTO.isRolesPresent()) {
-                Role foundRole = roleRepository.findByRoleName(
-                        updatedUserDTO.role().toUpperCase()
-                );
-
-                if (foundRole == null) {
-                    return ResponseEntity.notFound().build();
-                }
-                userService.assignRole(foundUser, foundRole.getRoleId());
-            }
-            if (updatedUserDTO.isChangeEnabledPresent()) {
-                foundUser.setIsEnabled(updatedUserDTO.isEnabled());
-            }
-            if (updatedUserDTO.isChangeAccountLockedPresent()) {
-                foundUser.setIsAccountNonLocked(updatedUserDTO.isAccountNonLocked());
-            }
-            userRepository.save(foundUser);
-
-            URI uri = ServletUriComponentsBuilder
-                    .fromCurrentRequest()
-                    .buildAndExpand(foundUser.getUserId())
-                    .toUri();
-
-            return ResponseEntity.created(uri).build();
-
-        } catch (RoleLimitExceededException e) {
-            throw new RoleLimitExceededException(e.getMessage());
-        }
+        userService.updateUser(id, updatedUserDTO);
+        return ResponseEntity.ok().build();
 
     }
 
@@ -177,23 +122,17 @@ public class UserController {
      * Deletes a user by their ID.
      *
      * @param id The unique identifier (Long) of the user to delete.
-     *
      * @return A {@link ResponseEntity} with the according status code. 200 OK
      * indicates the user was successfully deleted. 404 NOT FOUND indicates the
      * requested resource couldn't be found.
-     *
+     * @throws ResourceNotFoundException if the user ID is not valid.
      */
     @DeleteMapping(path="/users/{id}")
     public ResponseEntity<String> deleteSingleUser(@PathVariable Long id) {
 
-        Optional<User> user = userRepository.findById(id);
-
-        if (user.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-
-        userRepository.deleteById(id);
+        userService.deleteUser(id);
         return ResponseEntity.ok("User deleted successfully.");
+
     }
 
 }
