@@ -18,14 +18,36 @@ import java.util.stream.Collectors;
 public class CustomControllerAdvice extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(RoleLimitExceededException.class)
-    public ResponseEntity<ErrorDetails> handleRoleLimitExceededException(RoleLimitExceededException e) {
+    public ResponseEntity<ErrorDetails> handleRoleLimitExceededException(
+            RoleLimitExceededException e
+    ) {
         ErrorDetails errorResponse = new ErrorDetails();
         errorResponse.setMessage(e.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
     @ExceptionHandler(UsernameTakenException.class)
-    public ResponseEntity<ErrorDetails> handleDataIntegrityViolationException(UsernameTakenException e) {
+    public ResponseEntity<ErrorDetails> handleUsernameTakenException(
+            UsernameTakenException e
+    ) {
+        ErrorDetails errorResponse = new ErrorDetails();
+        errorResponse.setMessage(e.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ErrorDetails> handleResourceNotFoundException(
+            ResourceNotFoundException e
+    ) {
+        ErrorDetails errorResponse = new ErrorDetails();
+        errorResponse.setMessage(e.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+    }
+
+    @ExceptionHandler(ValidationErrorException.class)
+    public ResponseEntity<ErrorDetails> handleValidationErrorException(
+            ValidationErrorException e
+    ) {
         ErrorDetails errorResponse = new ErrorDetails();
         errorResponse.setMessage(e.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
