@@ -40,7 +40,7 @@ public class UserService {
      * @throws NameTakenException If the provided email is already registered
      *                                in the system.
      */
-    public User createUser(User user) throws RuntimeException {
+    public User createUser(User user) throws NameTakenException {
 
         Optional<User> dbUsernameCheck = userRepository.findByEmail(user.getUsername());
 
@@ -67,7 +67,7 @@ public class UserService {
     }
 
     /**
-     * Retrieves a single user from the database based on the ID.
+     * Retrieves all the users found on the database.
      *
      * @return A {@link List} containing all the users present in the database.
      */
@@ -78,7 +78,7 @@ public class UserService {
     }
 
     /**
-     * Updates a user's information in the system.
+     * Updates a user's information in the database.
      *
      * @param userId     The ID of the user to update.
      * @param updateInfo A {@link UserUpdateDTO} object containing the update
