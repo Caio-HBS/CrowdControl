@@ -3,8 +3,8 @@ package com.caiohbs.crowdcontrol.controller;
 import com.caiohbs.crowdcontrol.dto.UserDTO;
 import com.caiohbs.crowdcontrol.dto.UserUpdateDTO;
 import com.caiohbs.crowdcontrol.dto.mapper.UserDTOMapper;
+import com.caiohbs.crowdcontrol.exception.NameTakenException;
 import com.caiohbs.crowdcontrol.exception.ResourceNotFoundException;
-import com.caiohbs.crowdcontrol.exception.UsernameTakenException;
 import com.caiohbs.crowdcontrol.model.User;
 import com.caiohbs.crowdcontrol.service.UserService;
 import jakarta.validation.Valid;
@@ -77,7 +77,7 @@ public class UserController {
      * validation) will result in a 400 BAD REQUEST. If the user was created
      * successfully, the response will include a Location header pointing to the
      * URI of the newly created user.
-     * @throws UsernameTakenException if the username (e-mail) is already in use.
+     * @throws NameTakenException if the username (e-mail) is already in use.
      */
     @PostMapping(path="/users")
     public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
