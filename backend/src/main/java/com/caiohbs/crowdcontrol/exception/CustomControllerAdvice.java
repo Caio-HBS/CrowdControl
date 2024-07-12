@@ -26,9 +26,9 @@ public class CustomControllerAdvice extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
-    @ExceptionHandler(UsernameTakenException.class)
+    @ExceptionHandler(NameTakenException.class)
     public ResponseEntity<ErrorDetails> handleUsernameTakenException(
-            UsernameTakenException e
+            NameTakenException e
     ) {
         ErrorDetails errorResponse = new ErrorDetails();
         errorResponse.setMessage(e.getMessage());
@@ -63,11 +63,12 @@ public class CustomControllerAdvice extends ResponseEntityExceptionHandler {
                 .map(FieldError::getDefaultMessage)
                 .collect(Collectors.joining(", "));
 
-        ErrorDetails errorDetails = new ErrorDetails();
-        errorDetails.setMessage(errorsInValidation);
+        ErrorDetails errorDetails = new ErrorDetails(
+                ex.getMessage()
+        );
 
+        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDetails);
     }
 
 }

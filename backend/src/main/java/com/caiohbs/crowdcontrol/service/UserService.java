@@ -3,7 +3,7 @@ package com.caiohbs.crowdcontrol.service;
 import com.caiohbs.crowdcontrol.dto.UserUpdateDTO;
 import com.caiohbs.crowdcontrol.exception.ResourceNotFoundException;
 import com.caiohbs.crowdcontrol.exception.RoleLimitExceededException;
-import com.caiohbs.crowdcontrol.exception.UsernameTakenException;
+import com.caiohbs.crowdcontrol.exception.NameTakenException;
 import com.caiohbs.crowdcontrol.exception.ValidationErrorException;
 import com.caiohbs.crowdcontrol.model.Role;
 import com.caiohbs.crowdcontrol.model.User;
@@ -37,7 +37,7 @@ public class UserService {
      * @param user User object containing the data of the user to be created.
      * @return The newly created User object, or throws an exception if the
      * username is already in use.
-     * @throws UsernameTakenException If the provided email is already registered
+     * @throws NameTakenException If the provided email is already registered
      *                                in the system.
      */
     public User createUser(User user) throws RuntimeException {
@@ -45,7 +45,7 @@ public class UserService {
         Optional<User> dbUsernameCheck = userRepository.findByEmail(user.getUsername());
 
         if (dbUsernameCheck.isPresent()) {
-            throw new UsernameTakenException();
+            throw new NameTakenException("Username (e-mail) already taken.");
         }
 
         userRepository.save(user);
