@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
+import java.time.LocalDate;
+
 @Entity
 public class Payment {
 
@@ -14,17 +16,27 @@ public class Payment {
     @NotNull
     @Positive
     private double paymentAmount;
-    @ManyToOne(fetch=FetchType.LAZY)
+    private LocalDate paymentDate;
     @JsonIgnore
+    @ManyToOne(fetch=FetchType.EAGER)
     private User user;
 
     public Payment() {
     }
+    public Payment(User user, double paymentAmount) {
+        this.user = user;
+        this.paymentAmount = paymentAmount;
+        this.paymentDate = LocalDate.now();
+    }
 
-    public Payment(Long paymentId, User user, double paymentAmount) {
+    public Payment(
+            Long paymentId, User user,
+            double paymentAmount
+    ) {
         this.paymentId = paymentId;
         this.user = user;
         this.paymentAmount = paymentAmount;
+        this.paymentDate = LocalDate.now();
     }
 
     public Long getPaymentId() {
@@ -49,6 +61,14 @@ public class Payment {
 
     public void setPaymentAmount(double paymentAmount) {
         this.paymentAmount = paymentAmount;
+    }
+
+    public LocalDate getPaymentDate() {
+        return paymentDate;
+    }
+
+    public void setPaymentDate(LocalDate paymentDate) {
+        this.paymentDate = paymentDate;
     }
 
     @Override
