@@ -2,9 +2,11 @@ package com.caiohbs.crowdcontrol.dto.mapper;
 
 import com.caiohbs.crowdcontrol.dto.PaymentDTO;
 import com.caiohbs.crowdcontrol.model.Payment;
+import org.springframework.stereotype.Service;
 
 import java.util.function.Function;
 
+@Service
 public class PaymentDTOMapper implements Function<Payment, PaymentDTO> {
 
     @Override

@@ -23,6 +23,7 @@ public class Payment {
 
     public Payment() {
     }
+
     public Payment(User user, double paymentAmount) {
         this.user = user;
         this.paymentAmount = paymentAmount;
@@ -77,6 +78,7 @@ public class Payment {
                "paymentId=" + paymentId +
                ", user=" + user +
                ", paymentAmount=" + paymentAmount +
+               "paymentDate=" + paymentDate +
                '}';
     }
 
