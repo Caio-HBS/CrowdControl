@@ -38,7 +38,7 @@ public class UserService {
      * @return The newly created User object, or throws an exception if the
      * username is already in use.
      * @throws NameTakenException If the provided email is already registered
-     *                                in the system.
+     *                            in the system.
      */
     public User createUser(User user) throws NameTakenException {
 
@@ -155,10 +155,10 @@ public class UserService {
 
         int userCurrCount, roleMaxCount;
 
-        Optional<List<String>> usersList = userRepository.findUsernamesByRoleId(roleId);
+        List<String> usersList = userRepository.findUsernamesByRoleId(roleId);
         Optional<Role> role = roleRepository.findById(roleId);
-        if (usersList.isPresent() && role.isPresent()) {
-            userCurrCount = usersList.get().size();
+        if (!usersList.isEmpty() && role.isPresent()) {
+            userCurrCount = usersList.size();
             roleMaxCount = role.get().getMaxNumberOfUsers();
 
             if (userCurrCount >= roleMaxCount) {

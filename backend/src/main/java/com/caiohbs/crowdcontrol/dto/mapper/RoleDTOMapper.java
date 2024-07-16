@@ -6,7 +6,6 @@ import com.caiohbs.crowdcontrol.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Function;
 
 @Service
@@ -20,7 +19,7 @@ public class RoleDTOMapper implements Function<Role, RoleDTO> {
 
     @Override
     public RoleDTO apply(Role role) {
-        Optional<List<String>> usersList = userRepository
+        List<String> usersList = userRepository
                 .findUsernamesByRoleId(role.getRoleId());
 
         return new RoleDTO(
@@ -29,7 +28,7 @@ public class RoleDTOMapper implements Function<Role, RoleDTO> {
                 role.getMaxNumberOfUsers(),
                 role.getSalary(),
                 role.getPermissions(),
-                usersList.orElseGet(List::of)
+                usersList.stream().toList()
         );
     }
 }
