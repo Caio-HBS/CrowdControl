@@ -112,11 +112,11 @@ public class RoleService {
         try {
             Role foundRole = roleRepository.findById(roleId).orElseThrow();
 
-            Optional<List<String>> userWithRole = userRepository.findUsernamesByRoleId(roleId);
+            List<String> userWithRole = userRepository.findUsernamesByRoleId(roleId);
 
-            if (userWithRole.isPresent()) {
+            if (!userWithRole.isEmpty()) {
                 // Unassigning role from every user before deleting it.
-                for (String username : userWithRole.get()) {
+                for (String username : userWithRole) {
                     Optional<User> user = userRepository.findByEmail(username);
                     user.get().setRole(null);
                     userRepository.save(user.get());

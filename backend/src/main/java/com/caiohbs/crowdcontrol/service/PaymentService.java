@@ -64,11 +64,11 @@ public class PaymentService {
             Long roleId
     ) throws ResourceNotFoundException {
 
-        Optional<List<String>> foundUsersInRole = userRepository
+        List<String> foundUsersInRole = userRepository
                 .findUsernamesByRoleId(roleId);
 
-        if (foundUsersInRole.isPresent()) {
-            for (String username : foundUsersInRole.get()) {
+        if (!foundUsersInRole.isEmpty()) {
+            for (String username : foundUsersInRole) {
                 Optional<User> foundUser = userRepository.findByEmail(username);
 
                 if (foundUser.isPresent()) {
@@ -78,6 +78,8 @@ public class PaymentService {
                     paymentRepository.save(newPayment);
                 }
             }
+        } else {
+            throw new ResourceNotFoundException("No users in role.");
         }
 
     }

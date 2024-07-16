@@ -9,8 +9,10 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
+
     @Query("SELECT u.email FROM User u JOIN u.role r WHERE r.roleId = :roleId")
-    Optional<List<String>> findUsernamesByRoleId(@RequestParam("roleId") Long roleId);
+    List<String> findUsernamesByRoleId(@RequestParam("roleId") Long roleId);
 
     Optional<User> findByEmail(String email);
+
 }
