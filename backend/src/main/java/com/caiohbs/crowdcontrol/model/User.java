@@ -49,6 +49,9 @@ public class User implements UserDetails {
     private Role role;
     private boolean isEnabled;
     private boolean isAccountNonLocked;
+    @JsonIgnore
+    @OneToOne(mappedBy="user", cascade=CascadeType.REMOVE)
+    private UserInfo userInfo;
 
     public User() {
     }
@@ -164,6 +167,14 @@ public class User implements UserDetails {
 
     public void setSickNotes(List<SickNote> sickNotes) {
         this.sickNotes = sickNotes;
+    }
+
+    public UserInfo getUserInfo() {
+        return userInfo;
+    }
+
+    public void setUserInfo(UserInfo userInfo) {
+        this.userInfo = userInfo;
     }
 
     public Role getRole() {
