@@ -31,10 +31,6 @@ public class UserController {
         this.userDTOMapper = userDTOMapper;
     }
 
-    //TODO: add view to retrieve base info when logging in.
-//    @GetMapping(path="/first-hit")
-//    public ResponseEntity<> getFirstHit() {}
-
     /**
      * Retrieves a list of all users.
      *

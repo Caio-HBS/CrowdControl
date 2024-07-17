@@ -170,6 +170,10 @@ public class UserService {
             }
             user.setRole(role.get());
             userRepository.save(user);
+
+        } else if (role.isPresent()) {
+            user.setRole(role.get());
+            userRepository.save(user);
         }
 
     }

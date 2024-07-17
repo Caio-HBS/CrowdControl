@@ -50,8 +50,6 @@ public class PaymentService {
         paymentRepository.save(newPayment);
     }
 
-    // TODO: change this Optional.
-
     /**
      * Creates a new payment with the same amount for ALL the users in a given
      * role.

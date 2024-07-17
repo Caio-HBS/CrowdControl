@@ -66,8 +66,6 @@ public class PaymentController {
         return ResponseEntity.ok(payments);
     }
 
-    // TODO: fix created URI.
-
     /**
      * Creates a new payment for a single user.
      *

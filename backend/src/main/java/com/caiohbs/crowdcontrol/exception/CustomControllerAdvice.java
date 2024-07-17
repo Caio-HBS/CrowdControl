@@ -64,7 +64,7 @@ public class CustomControllerAdvice extends ResponseEntityExceptionHandler {
                 .collect(Collectors.joining(", "));
 
         ErrorDetails errorDetails = new ErrorDetails(
-                ex.getMessage()
+                errorsInValidation
         );
 
         return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
