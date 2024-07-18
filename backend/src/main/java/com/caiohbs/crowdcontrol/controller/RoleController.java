@@ -5,6 +5,7 @@ import com.caiohbs.crowdcontrol.dto.RoleUpdateDTO;
 import com.caiohbs.crowdcontrol.dto.mapper.RoleDTOMapper;
 import com.caiohbs.crowdcontrol.exception.NameTakenException;
 import com.caiohbs.crowdcontrol.exception.ResourceNotFoundException;
+import com.caiohbs.crowdcontrol.model.GenericValidResponse;
 import com.caiohbs.crowdcontrol.model.Role;
 import com.caiohbs.crowdcontrol.service.RoleService;
 import jakarta.validation.Valid;
@@ -71,11 +72,12 @@ public class RoleController {
      * CREATED indicates creation of the resource. Any errors (including
      * validation) will result in a 400 BAD REQUEST. If the role was created
      * successfully, the response will include a Location header pointing to the
-     * URI of the newly created role.
+     * URI of the newly created role. The response body also contains a message
+     * for users indicating said status.
      * @throws NameTakenException if the role name is already in use.
      */
     @PostMapping(path="/roles")
-    public ResponseEntity<Role> createRole(@Valid @RequestBody Role role) {
+    public ResponseEntity<GenericValidResponse> createRole(@Valid @RequestBody Role role) {
 
         Role createdRole = roleService.createRole(role);
         URI uri = ServletUriComponentsBuilder
@@ -83,7 +85,11 @@ public class RoleController {
                 .path("/{id}")
                 .buildAndExpand(createdRole.getRoleId())
                 .toUri();
-        return ResponseEntity.created(uri).build();
+
+        GenericValidResponse response = new GenericValidResponse();
+        response.setMessage("Role created successfully.");
+
+        return ResponseEntity.created(uri).body(response);
 
     }
 
@@ -99,15 +105,20 @@ public class RoleController {
      * indicates issues on request (including validation). 404 NOT FOUND
      * indicates the requested resource does not exist or couldn't be found. If
      * the role was updated successfully, the response will include a Location
-     * header pointing to the URI of the newly updated role.
+     * header pointing to the URI of the newly updated role. The response body
+     * also contains a message for users indicating said status.
      */
     @PutMapping(path="/roles/{id}")
-    public ResponseEntity<String> updateRoleById(
+    public ResponseEntity<GenericValidResponse> updateRoleById(
             @RequestBody RoleUpdateDTO updateRoleDTO, @PathVariable Long id
     ) {
 
         roleService.updateRole(id, updateRoleDTO);
-        return ResponseEntity.ok().build();
+
+        GenericValidResponse response = new GenericValidResponse();
+        response.setMessage("Role updated successfully.");
+
+        return ResponseEntity.ok().body(response);
 
     }
 
@@ -117,14 +128,19 @@ public class RoleController {
      * @param id The unique identifier (Long) of the role to be deleted.
      * @return A {@link ResponseEntity} with the according status code. 200 OK
      * indicates the role was successfully deleted. 404 NOT FOUND indicates the
-     * requested resource couldn't be found.
+     * requested resource couldn't be found. The response body also contains a
+     * message for users indicating said status.
      * @throws ResourceNotFoundException if the role ID is not valid.
      */
     @DeleteMapping(path="/roles/{id}")
-    public ResponseEntity<String> deleteSingleRole(@PathVariable Long id) {
+    public ResponseEntity<GenericValidResponse> deleteSingleRole(@PathVariable Long id) {
 
         roleService.deleteRole(id);
-        return ResponseEntity.ok("Role deleted successfully.");
+
+        GenericValidResponse response = new GenericValidResponse();
+        response.setMessage("Role deleted successfully.");
+
+        return ResponseEntity.ok(response);
 
     }
 
