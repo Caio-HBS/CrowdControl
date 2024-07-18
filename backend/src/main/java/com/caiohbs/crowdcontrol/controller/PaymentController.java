@@ -3,6 +3,7 @@ package com.caiohbs.crowdcontrol.controller;
 import com.caiohbs.crowdcontrol.dto.PaymentDTO;
 import com.caiohbs.crowdcontrol.dto.mapper.PaymentDTOMapper;
 import com.caiohbs.crowdcontrol.exception.ResourceNotFoundException;
+import com.caiohbs.crowdcontrol.model.GenericValidResponse;
 import com.caiohbs.crowdcontrol.model.Payment;
 import com.caiohbs.crowdcontrol.service.PaymentService;
 import jakarta.validation.Valid;
@@ -73,11 +74,12 @@ public class PaymentController {
      *                payment is being made.
      * @param payment The {@link Payment} object containing the payment amount.
      * @return A {@link ResponseEntity} containing the created resource. ALso
-     * provides a URI pointing at the created resource's new endpoint.
+     * provides a URI pointing at the created resource's new endpoint. The
+     * response body also contains a message for users indicating said status.
      * @throws ResourceNotFoundException if the user is not found.
      */
     @PostMapping(path="/users/{userId}/new-payment")
-    public ResponseEntity<Payment> createPayment(
+    public ResponseEntity<GenericValidResponse> createPayment(
             @PathVariable("userId") Long userId,
             @Valid @RequestBody Payment payment
     ) {
@@ -90,7 +92,11 @@ public class PaymentController {
                 .substring(0, currUri.lastIndexOf("/new-payment"));
 
         URI uri = UriComponentsBuilder.fromUriString(baseUri).build().toUri();
-        return ResponseEntity.created(uri).build();
+
+        GenericValidResponse response = new GenericValidResponse();
+        response.setMessage("New payment created successfully.");
+
+        return ResponseEntity.created(uri).body(response);
 
     }
 
@@ -101,16 +107,21 @@ public class PaymentController {
      * @param roleId The unique identifier (Long) for the role to which the
      *               payments will be made.
      * @return A {@link ResponseEntity} with the code 200 - OK, and a successful
-     * message.
+     * message. The response body also contains a message for users indicating
+     * said status.
      * @throws ResourceNotFoundException if the role is not found or is empty.
      */
     @PostMapping(path="/roles/{roleId}/auto-payment")
-    public ResponseEntity<String> createAutoPayment(
+    public ResponseEntity<GenericValidResponse> createAutoPayment(
             @PathVariable("roleId") Long roleId
     ) {
 
         paymentService.createPaymentForRole(roleId);
-        return ResponseEntity.ok("Payment created.");
+
+        GenericValidResponse response = new GenericValidResponse();
+        response.setMessage("Auto payment created successfully.");
+
+        return ResponseEntity.ok(response);
 
     }
 
@@ -118,14 +129,19 @@ public class PaymentController {
      * Deletes a payment based on the ID.
      *
      * @return A {@link ResponseEntity} with the code 200 - OK, and a successful
-     * message.
+     * message. The response body also contains a message for users indicating
+     * said status.
      * @throws ResourceNotFoundException if the payment is not found.
      */
     @DeleteMapping(path="/payments/{id}")
-    public ResponseEntity<String> deletePaymentById(@PathVariable Long id) {
+    public ResponseEntity<GenericValidResponse> deletePaymentById(@PathVariable Long id) {
 
         paymentService.deletePayment(id);
-        return ResponseEntity.ok("Payment deleted successfully.");
+
+        GenericValidResponse response = new GenericValidResponse();
+        response.setMessage("Payment deleted successfully.");
+
+        return ResponseEntity.ok(response);
 
     }
 
