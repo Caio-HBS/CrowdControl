@@ -78,7 +78,7 @@ public class SickNoteController {
      * response body also contains a message for users indicating said status.
      * @throws ResourceNotFoundException if the user is not found.
      */
-    @PostMapping(path="/users/{userId}/new-sick-note")
+    @PostMapping(path="/users/{userId}/sick-notes")
     public ResponseEntity<GenericValidResponse> createSickNote(
             @PathVariable Long userId, @Valid @RequestBody SickNote sickNote
     ) {
@@ -102,6 +102,7 @@ public class SickNoteController {
     /**
      * Deletes a sick note based on the ID.
      *
+     * @param sickNoteId The ID of the sick note to be deleted.
      * @return A {@link ResponseEntity} with the code 200 - OK, and a successful
      * message. The response body also contains a message for users indicating
      * said status.
