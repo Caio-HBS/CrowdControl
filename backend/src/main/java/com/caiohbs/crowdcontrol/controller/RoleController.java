@@ -48,16 +48,16 @@ public class RoleController {
     /**
      * Retrieves a single role based on an ID tag.
      *
-     * @param id The unique identifier (Long) of the role to be retrieved.
+     * @param roleId The unique identifier (Long) of the role to be retrieved.
      * @return containing a {@link RoleDTO} object representing the found role,
      * or a {@link ResponseEntity} with a 404 Not Found status code if no role
      * is found.
      * @throws ResourceNotFoundException if the role is not found.
      */
-    @GetMapping(path="/roles/{id}")
-    public ResponseEntity<RoleDTO> getSingleRole(@PathVariable Long id) {
+    @GetMapping(path="/roles/{roleId}")
+    public ResponseEntity<RoleDTO> getSingleRole(@PathVariable Long roleId) {
 
-        return roleService.retrieveSingleRole(id)
+        return roleService.retrieveSingleRole(roleId)
                 .map(role -> ResponseEntity.ok(roleDTOMapper.apply(role)))
                 .orElseThrow(() -> new ResourceNotFoundException("Role not found."));
 
@@ -77,7 +77,9 @@ public class RoleController {
      * @throws NameTakenException if the role name is already in use.
      */
     @PostMapping(path="/roles")
-    public ResponseEntity<GenericValidResponse> createRole(@Valid @RequestBody Role role) {
+    public ResponseEntity<GenericValidResponse> createRole(
+            @Valid @RequestBody Role role
+    ) {
 
         Role createdRole = roleService.createRole(role);
         URI uri = ServletUriComponentsBuilder
@@ -96,7 +98,7 @@ public class RoleController {
     /**
      * Updates an existing role.
      *
-     * @param id            The unique identifier (Long) of the role to update.
+     * @param roleId        The unique identifier (Long) of the role to update.
      * @param updateRoleDTO The {@link RoleUpdateDTO} object containing the
      *                      update information for the role. Only fields
      *                      present in the DTO will be updated.
@@ -108,12 +110,12 @@ public class RoleController {
      * header pointing to the URI of the newly updated role. The response body
      * also contains a message for users indicating said status.
      */
-    @PutMapping(path="/roles/{id}")
+    @PutMapping(path="/roles/{roleId}")
     public ResponseEntity<GenericValidResponse> updateRoleById(
-            @RequestBody RoleUpdateDTO updateRoleDTO, @PathVariable Long id
+            @RequestBody RoleUpdateDTO updateRoleDTO, @PathVariable Long roleId
     ) {
 
-        roleService.updateRole(id, updateRoleDTO);
+        roleService.updateRole(roleId, updateRoleDTO);
 
         GenericValidResponse response = new GenericValidResponse();
         response.setMessage("Role updated successfully.");
@@ -125,17 +127,19 @@ public class RoleController {
     /**
      * Deletes a role by their ID.
      *
-     * @param id The unique identifier (Long) of the role to be deleted.
+     * @param roleId The unique identifier (Long) of the role to be deleted.
      * @return A {@link ResponseEntity} with the according status code. 200 OK
      * indicates the role was successfully deleted. 404 NOT FOUND indicates the
      * requested resource couldn't be found. The response body also contains a
      * message for users indicating said status.
      * @throws ResourceNotFoundException if the role ID is not valid.
      */
-    @DeleteMapping(path="/roles/{id}")
-    public ResponseEntity<GenericValidResponse> deleteSingleRole(@PathVariable Long id) {
+    @DeleteMapping(path="/roles/{roleId}")
+    public ResponseEntity<GenericValidResponse> deleteSingleRole(
+            @PathVariable Long roleId
+    ) {
 
-        roleService.deleteRole(id);
+        roleService.deleteRole(roleId);
 
         GenericValidResponse response = new GenericValidResponse();
         response.setMessage("Role deleted successfully.");

@@ -49,18 +49,20 @@ public class UserController {
     /**
      * Retrieves a single user based on an ID tag.
      *
-     * @param pathId The unique identifier (Long) of the user to be retrieved.
+     * @param userId The unique identifier (Long) of the user to be retrieved.
      * @return containing a {@link UserDTO} object representing the found user,
      * or a {@link ResponseEntity} with a 404 Not Found status code if no user
      * is found.
      * @throws ResourceNotFoundException if the user is not found.
      */
-    @GetMapping(path="/users/{pathId}")
-    public ResponseEntity<UserDTO> getSingleUser(@PathVariable Long pathId) {
+    @GetMapping(path="/users/{userId}")
+    public ResponseEntity<UserDTO> getSingleUser(@PathVariable Long userId) {
 
-        return userService.retrieveSingleUser(pathId)
+        return userService.retrieveSingleUser(userId)
                 .map(user -> ResponseEntity.ok(userDTOMapper.apply(user)))
-                .orElseThrow(() -> new ResourceNotFoundException("User not found."));
+                .orElseThrow(
+                        () -> new ResourceNotFoundException("User not found.")
+                );
 
     }
 
@@ -78,7 +80,9 @@ public class UserController {
      * @throws NameTakenException if the username (e-mail) is already in use.
      */
     @PostMapping(path="/users")
-    public ResponseEntity<GenericValidResponse> createUser(@Valid @RequestBody User user) {
+    public ResponseEntity<GenericValidResponse> createUser(
+            @Valid @RequestBody User user
+    ) {
 
         User savedUser = userService.createUser(user);
 
@@ -98,7 +102,7 @@ public class UserController {
     /**
      * Updates an existing user.
      *
-     * @param id             The unique identifier (Long) of the user to update.
+     * @param userId         The unique identifier (Long) of the user to update.
      * @param updatedUserDTO The {@link UserUpdateDTO} object containing the
      *                       update information for the user. Only fields
      *                       present in the DTO will be updated.
@@ -110,13 +114,13 @@ public class UserController {
      * header pointing to the URI of the newly updated user. The response body
      * also contains a message for users indicating said status.
      */
-    @PutMapping(path="/users/{id}")
+    @PutMapping(path="/users/{userId}")
     public ResponseEntity<GenericValidResponse> updateUserById(
             @Valid @RequestBody UserUpdateDTO updatedUserDTO,
-            @PathVariable Long id
+            @PathVariable Long userId
     ) {
 
-        userService.updateUser(id, updatedUserDTO);
+        userService.updateUser(userId, updatedUserDTO);
 
         GenericValidResponse response = new GenericValidResponse();
         response.setMessage("User updated successfully.");
@@ -128,17 +132,19 @@ public class UserController {
     /**
      * Deletes a user by their ID.
      *
-     * @param id The unique identifier (Long) of the user to delete.
+     * @param userId The unique identifier (Long) of the user to delete.
      * @return A {@link ResponseEntity} with the according status code. 200 OK
      * indicates the user was successfully deleted. 404 NOT FOUND indicates the
      * requested resource couldn't be found. The response body also contains a
      * message for users indicating said status.
      * @throws ResourceNotFoundException if the user ID is not valid.
      */
-    @DeleteMapping(path="/users/{id}")
-    public ResponseEntity<GenericValidResponse> deleteSingleUser(@PathVariable Long id) {
+    @DeleteMapping(path="/users/{userId}")
+    public ResponseEntity<GenericValidResponse> deleteSingleUser(
+            @PathVariable Long userId
+    ) {
 
-        userService.deleteUser(id);
+        userService.deleteUser(userId);
 
         GenericValidResponse response = new GenericValidResponse();
         response.setMessage("User deleted successfully.");

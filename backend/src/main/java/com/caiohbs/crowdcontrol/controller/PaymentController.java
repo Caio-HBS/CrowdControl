@@ -78,7 +78,7 @@ public class PaymentController {
      * response body also contains a message for users indicating said status.
      * @throws ResourceNotFoundException if the user is not found.
      */
-    @PostMapping(path="/users/{userId}/new-payment")
+    @PostMapping(path="/users/{userId}/payment")
     public ResponseEntity<GenericValidResponse> createPayment(
             @PathVariable("userId") Long userId,
             @Valid @RequestBody Payment payment
@@ -134,7 +134,9 @@ public class PaymentController {
      * @throws ResourceNotFoundException if the payment is not found.
      */
     @DeleteMapping(path="/payments/{id}")
-    public ResponseEntity<GenericValidResponse> deletePaymentById(@PathVariable Long id) {
+    public ResponseEntity<GenericValidResponse> deletePaymentById(
+            @PathVariable Long id
+    ) {
 
         paymentService.deletePayment(id);
 

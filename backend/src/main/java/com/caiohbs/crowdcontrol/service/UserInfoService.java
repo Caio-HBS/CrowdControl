@@ -58,7 +58,7 @@ public class UserInfoService {
         }
 
         UserInfo newUserInfo = new UserInfo(
-                foundUser.get(), convertImageName(userInfo.getPfp()),
+                foundUser.get(), convertFileName(userInfo.getPfp()),
                 userInfo.getPronouns(), userInfo.getBio(), userInfo.getNationality()
         );
 
@@ -122,7 +122,7 @@ public class UserInfoService {
         }
 
         if (updateInfoDTO.isPfpPresent()) {
-            result = convertImageName(updateInfoDTO.pfp());
+            result = convertFileName(updateInfoDTO.pfp());
             foundUser.setPfp(result);
         }
         if (updateInfoDTO.isPronounsPresent()) {
@@ -147,18 +147,18 @@ public class UserInfoService {
     /**
      * This method receives the original file name WITH THE EXTENSION INCLUDED
      * and returns the new name with randomized characters to prevent
-     * name-clashing when saving images.
+     * name-clashing when saving files.
      * NOTE: the files WILL NOT be stored by Spring, the front-end will simply
      * receive the new name for the file that is to be stored and served by
-     * another app in the stack. This whole method just facilitates on saving
-     * the image path to database.
+     * another app in the stack. This whole method just facilitates saving the
+     * file path to database.
      *
      * @param originalFileName The original name of the file, including the
      *                         original extension.
      * @return The result of the generation, including the extension of
      * the file at the end.
      */
-    public String convertImageName(String originalFileName) {
+    public String convertFileName(String originalFileName) {
 
         String newName = UUID.randomUUID() + "_" + originalFileName;
 

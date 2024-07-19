@@ -41,7 +41,7 @@ public class User implements UserDetails {
     @OneToMany(mappedBy="user", fetch=FetchType.EAGER, cascade=CascadeType.REMOVE)
     @JsonIgnore
     private List<Payment> payments;
-    @OneToMany(mappedBy="user", fetch=FetchType.EAGER)
+    @OneToMany(mappedBy="user", fetch=FetchType.EAGER, cascade=CascadeType.REMOVE)
     @JsonIgnore
     private List<SickNote> sickNotes;
     @JsonIgnore
