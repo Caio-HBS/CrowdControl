@@ -1,6 +1,7 @@
 package com.caiohbs.crowdcontrol.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.util.ArrayList;
@@ -16,9 +17,10 @@ public class UserInfo {
     private Long userInfoId;
     @OneToOne(fetch=FetchType.EAGER)
     private User user;
+    @NotNull
     private String pfp;
     private String pronouns;
-    @Size(min=0, max=280, message="field 'bio' has to be between 0 and 280 characters")
+    @Size(max=250, message="field 'bio' has to be between 0 and 250 characters")
     private String bio;
     private String nationality;
 
