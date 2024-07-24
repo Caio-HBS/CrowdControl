@@ -7,6 +7,7 @@ import com.caiohbs.crowdcontrol.exception.NameTakenException;
 import com.caiohbs.crowdcontrol.exception.ResourceNotFoundException;
 import com.caiohbs.crowdcontrol.model.GenericValidResponse;
 import com.caiohbs.crowdcontrol.model.User;
+import com.caiohbs.crowdcontrol.service.AccManagementService;
 import com.caiohbs.crowdcontrol.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -23,13 +24,16 @@ public class UserController {
 
     private final UserDTOMapper userDTOMapper;
     private final UserService userService;
+    private final AccManagementService accManagementService;
 
     public UserController(
             UserService userService,
-            UserDTOMapper userDTOMapper
+            UserDTOMapper userDTOMapper,
+            AccManagementService accManagementService
     ) {
         this.userService = userService;
         this.userDTOMapper = userDTOMapper;
+        this.accManagementService = accManagementService;
     }
 
     /**
@@ -85,6 +89,7 @@ public class UserController {
     ) {
 
         User savedUser = userService.createUser(user);
+        accManagementService.createEmailCode(user, "ENABLE_ACC");
 
         URI uri = ServletUriComponentsBuilder
                 .fromCurrentRequest()
