@@ -10,7 +10,9 @@ spring:
     open-in-view: false
     hibernate:
       ddl-auto: update
-#    properties:
-#      hibernate:
-#        dialect:
-#          org.hibernate.dialect.PostgreSQLDialect
+logging:
+  level:
+    root: INFO
+crowdcontrol:
+  vars:
+    SECRET_KEY: "" # Define here your 256 secret key for JWT.
