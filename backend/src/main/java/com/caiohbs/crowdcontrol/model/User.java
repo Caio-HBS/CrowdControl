@@ -52,6 +52,9 @@ public class User implements UserDetails {
     @JsonIgnore
     @OneToOne(mappedBy="user", cascade=CascadeType.REMOVE)
     private UserInfo userInfo;
+    @JsonIgnore
+    @OneToMany(mappedBy="user", fetch=FetchType.EAGER, cascade=CascadeType.REMOVE)
+    private List<EmailCode> emailCodes;
 
     public User() {
     }
@@ -78,6 +81,7 @@ public class User implements UserDetails {
     @PrePersist
     public void prePersist() {
         this.registerDate = LocalDate.now();
+        this.isAccountNonLocked = true;
     }
 
     @Override
@@ -187,7 +191,7 @@ public class User implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
@@ -201,7 +205,7 @@ public class User implements UserDetails {
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
@@ -211,6 +215,14 @@ public class User implements UserDetails {
 
     public void setIsEnabled(boolean isEnabled) {
         this.isEnabled = isEnabled;
+    }
+
+    public List<EmailCode> getEmailCodes() {
+        return emailCodes;
+    }
+
+    public void setEmailCodes(List<EmailCode> emailCodes) {
+        this.emailCodes = emailCodes;
     }
 
     @Override
