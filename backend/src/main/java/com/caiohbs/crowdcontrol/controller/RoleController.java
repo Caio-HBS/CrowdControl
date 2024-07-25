@@ -6,10 +6,12 @@ import com.caiohbs.crowdcontrol.dto.mapper.RoleDTOMapper;
 import com.caiohbs.crowdcontrol.exception.NameTakenException;
 import com.caiohbs.crowdcontrol.exception.ResourceNotFoundException;
 import com.caiohbs.crowdcontrol.model.GenericValidResponse;
+import com.caiohbs.crowdcontrol.model.Permission;
 import com.caiohbs.crowdcontrol.model.Role;
 import com.caiohbs.crowdcontrol.service.RoleService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -32,11 +34,13 @@ public class RoleController {
     }
 
     /**
-     * Retrieves a list of all roles.
+     * Retrieves a list of all roles. This endpoint requires the user to have the
+     * {@link Permission} "READ_GENERAL" for the request to be authorized.
      *
      * @return A list of {@link RoleDTO} objects representing the found roles.
      */
     @GetMapping(path="/roles")
+    @PreAuthorize("hasAuthority('READ_GENERAL')")
     public ResponseEntity<List<RoleDTO>> getRolesList() {
 
         return ResponseEntity.ok(roleService.retrieveAllRoles()
@@ -46,7 +50,9 @@ public class RoleController {
     }
 
     /**
-     * Retrieves a single role based on an ID tag.
+     * Retrieves a single role based on an ID tag. This endpoint requires the user
+     * to be the owner of the asset and have the {@link Permission} "READ_SELF",
+     * or have the {@link Permission} "READ_GENERAL" for the request to be authorized.
      *
      * @param roleId The unique identifier (Long) of the role to be retrieved.
      * @return containing a {@link RoleDTO} object representing the found role,
@@ -55,6 +61,9 @@ public class RoleController {
      * @throws ResourceNotFoundException if the role is not found.
      */
     @GetMapping(path="/roles/{roleId}")
+    @PreAuthorize(
+            "@securityUtils.getAuthUserId() == #roleId and hasAuthority('READ_SELF') or hasAuthority('READ_GENERAL')"
+    )
     public ResponseEntity<RoleDTO> getSingleRole(@PathVariable Long roleId) {
 
         return roleService.retrieveSingleRole(roleId)
@@ -64,7 +73,8 @@ public class RoleController {
     }
 
     /**
-     * Creates a new role.
+     * Creates a new role. This endpoint requires the user to have the
+     * {@link Permission} "CREATE_ROLE_GENERAL" for the request to be authorized.
      *
      * @param role The role object to be created. The object should be a valid
      *             {@link Role} with all required fields populated.
@@ -77,6 +87,7 @@ public class RoleController {
      * @throws NameTakenException if the role name is already in use.
      */
     @PostMapping(path="/roles")
+    @PreAuthorize("hasAuthority('CREATE_ROLE_GENERAL')")
     public ResponseEntity<GenericValidResponse> createRole(
             @Valid @RequestBody Role role
     ) {
@@ -88,15 +99,16 @@ public class RoleController {
                 .buildAndExpand(createdRole.getRoleId())
                 .toUri();
 
-        GenericValidResponse response = new GenericValidResponse();
-        response.setMessage("Role created successfully.");
-
+        GenericValidResponse response = new GenericValidResponse(
+                "Role created successfully."
+        );
         return ResponseEntity.created(uri).body(response);
 
     }
 
     /**
-     * Updates an existing role.
+     * Updates an existing role. This endpoint requires the user to have the
+     * {@link Permission} "UPDATE_GENERAL" for the request to be authorized.
      *
      * @param roleId        The unique identifier (Long) of the role to update.
      * @param updateRoleDTO The {@link RoleUpdateDTO} object containing the
@@ -111,21 +123,23 @@ public class RoleController {
      * also contains a message for users indicating said status.
      */
     @PutMapping(path="/roles/{roleId}")
+    @PreAuthorize("hasAuthority('UPDATE_GENERAL')")
     public ResponseEntity<GenericValidResponse> updateRoleById(
             @RequestBody RoleUpdateDTO updateRoleDTO, @PathVariable Long roleId
     ) {
 
         roleService.updateRole(roleId, updateRoleDTO);
 
-        GenericValidResponse response = new GenericValidResponse();
-        response.setMessage("Role updated successfully.");
-
+        GenericValidResponse response = new GenericValidResponse(
+                "Role updated successfully."
+        );
         return ResponseEntity.ok().body(response);
 
     }
 
     /**
-     * Deletes a role by their ID.
+     * Deletes a role by their ID. This endpoint requires the user to have the
+     * {@link Permission} "DELETE_GENERAL" for the request to be authorized.
      *
      * @param roleId The unique identifier (Long) of the role to be deleted.
      * @return A {@link ResponseEntity} with the according status code. 200 OK
@@ -135,15 +149,16 @@ public class RoleController {
      * @throws ResourceNotFoundException if the role ID is not valid.
      */
     @DeleteMapping(path="/roles/{roleId}")
+    @PreAuthorize("hasAuthority('DELETE_GENERAL')")
     public ResponseEntity<GenericValidResponse> deleteSingleRole(
             @PathVariable Long roleId
     ) {
 
         roleService.deleteRole(roleId);
 
-        GenericValidResponse response = new GenericValidResponse();
-        response.setMessage("Role deleted successfully.");
-
+        GenericValidResponse response = new GenericValidResponse(
+                "Role deleted successfully."
+        );
         return ResponseEntity.ok(response);
 
     }
