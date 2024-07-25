@@ -4,10 +4,12 @@ import com.caiohbs.crowdcontrol.dto.UserInfoDTO;
 import com.caiohbs.crowdcontrol.dto.UserInfoUpdateDTO;
 import com.caiohbs.crowdcontrol.dto.mapper.UserInfoDTOMapper;
 import com.caiohbs.crowdcontrol.model.GenericValidResponse;
+import com.caiohbs.crowdcontrol.model.Permission;
 import com.caiohbs.crowdcontrol.model.UserInfo;
 import com.caiohbs.crowdcontrol.service.UserInfoService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -22,24 +24,23 @@ public class UserInfoController {
     private final UserInfoService userInfoService;
 
     public UserInfoController(UserInfoService userInfoService) {
-
         this.userInfoService = userInfoService;
-
     }
 
     /**
-     * Retrieves user information for a given user ID.
-     * Handles the incoming GET request to fetch user information.
+     * Retrieves user information for a given user ID. This endpoint requires
+     * the user to either have the {@link Permission} "READ_SELF", or
+     * "READ_GENERAL" for the request to be authorized.
      *
      * @param userId The ID of the user whose information to retrieve.
      * @return A ResponseEntity with an OK status and the user's information as
      * a {@link UserInfoDTO} object.
      */
     @GetMapping(path="users/{userId}/info")
+    @PreAuthorize("hasAuthority('READ_SELF') or hasAuthority('READ_GENERAL')")
     public ResponseEntity<UserInfoDTO> getUserInfo(@PathVariable Long userId) {
 
         UserInfo foundInfo = userInfoService.retrieveInfo(userId);
-
         UserInfoDTO userInfoDTO = new UserInfoDTOMapper().apply(foundInfo);
 
         return ResponseEntity.ok(userInfoDTO);
@@ -49,7 +50,9 @@ public class UserInfoController {
     /**
      * Creates user information for a given user ID. Handles the incoming POST
      * request to create user information. Should the call be successful, returns
-     * the URI of the updated user in the response header.
+     * the URI of the updated user in the response header. This endpoint requires
+     * the user to be the owner of the asset AND have the {@link Permission}
+     * "CREATE_INFO_SELF" for the request to be authorized.
      *
      * @param userId   The ID of the user for whom to create user information.
      * @param userInfo The {@link UserInfo} information to be created.
@@ -58,6 +61,9 @@ public class UserInfoController {
      * picture filename.
      */
     @PostMapping("users/{userId}/info")
+    @PreAuthorize(
+            "@securityUtils.getAuthUserId() == #userId and hasAuthority('CREATE_INFO_SELF')"
+    )
     public ResponseEntity<GenericValidResponse> createUserInfo(
             @PathVariable Long userId, @RequestBody UserInfo userInfo
     ) {
@@ -71,16 +77,16 @@ public class UserInfoController {
 
         URI uri = UriComponentsBuilder.fromUriString(baseUri).build().toUri();
 
-        GenericValidResponse response = new GenericValidResponse();
-        response.setMessage(newUserInfo.getPfp());
-
+        GenericValidResponse response = new GenericValidResponse(newUserInfo.getPfp());
         return ResponseEntity.created(uri).body(response);
 
     }
 
     /**
      * Updates user information for a given user ID. Handles the incoming PUT
-     * request to update user information.
+     * request to update user information. This endpoint requires the user to
+     * be the owner of the asset and have the {@link Permission} "UPDATE_INFO_SELF"
+     * for the request to be authorized.
      *
      * @param userId   The ID of the user whose information to update.
      * @param userInfo The updated user information to be applied.
@@ -88,6 +94,9 @@ public class UserInfoController {
      * or the result of the update operation.
      */
     @PutMapping(path="users/{userId}/info")
+    @PreAuthorize(
+            "@securityUtils.getAuthUserId() == #userId and hasAuthority('UPDATE_INFO_SELF')"
+    )
     public ResponseEntity<GenericValidResponse> updateUserInfo(
             @PathVariable("userId") Long userId,
             @Valid @RequestBody UserInfoUpdateDTO userInfo

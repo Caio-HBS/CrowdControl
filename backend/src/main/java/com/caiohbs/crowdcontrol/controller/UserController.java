@@ -6,11 +6,13 @@ import com.caiohbs.crowdcontrol.dto.mapper.UserDTOMapper;
 import com.caiohbs.crowdcontrol.exception.NameTakenException;
 import com.caiohbs.crowdcontrol.exception.ResourceNotFoundException;
 import com.caiohbs.crowdcontrol.model.GenericValidResponse;
+import com.caiohbs.crowdcontrol.model.Permission;
 import com.caiohbs.crowdcontrol.model.User;
 import com.caiohbs.crowdcontrol.service.AccManagementService;
 import com.caiohbs.crowdcontrol.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -37,11 +39,13 @@ public class UserController {
     }
 
     /**
-     * Retrieves a list of all users.
+     * Retrieves a list of all users. This endpoint requires the user to have the
+     * {@link Permission} "READ_GENERAL" for the request to be authorized.
      *
      * @return A list of {@link UserDTO} objects representing the found users.
      */
     @GetMapping(path="/users")
+    @PreAuthorize("hasAuthority('READ_GENERAL')")
     public ResponseEntity<List<UserDTO>> getUsersList() {
 
         return ResponseEntity.ok(userService.retrieveAllUsers()
@@ -51,7 +55,10 @@ public class UserController {
     }
 
     /**
-     * Retrieves a single user based on an ID tag.
+     * Retrieves a single user based on an ID tag. This endpoint requires either
+     * the user making the request being the owner of the asset AND having the
+     * {@link Permission} "READ_SELF", or the {@link Permission} "READ_GENERAL"
+     * for the request to be authorized.
      *
      * @param userId The unique identifier (Long) of the user to be retrieved.
      * @return containing a {@link UserDTO} object representing the found user,
@@ -60,6 +67,9 @@ public class UserController {
      * @throws ResourceNotFoundException if the user is not found.
      */
     @GetMapping(path="/users/{userId}")
+    @PreAuthorize(
+            "@securityUtils.getAuthUserId() == #userId and hasAuthority('READ_SELF') or hasAuthority('READ_GENERAL')"
+    )
     public ResponseEntity<UserDTO> getSingleUser(@PathVariable Long userId) {
 
         return userService.retrieveSingleUser(userId)
@@ -71,7 +81,8 @@ public class UserController {
     }
 
     /**
-     * Creates a new user.
+     * Creates a new user. This endpoint requires the user to have the
+     * {@link Permission} "CREATE_USER_GENERAL" for the request to be authorized.
      *
      * @param user The user object to be created. The object should be a valid
      *             {@link User} with all required fields populated.
@@ -84,6 +95,7 @@ public class UserController {
      * @throws NameTakenException if the username (e-mail) is already in use.
      */
     @PostMapping(path="/users")
+    @PreAuthorize("hasAuthority('CREATE_USER_GENERAL')")
     public ResponseEntity<GenericValidResponse> createUser(
             @Valid @RequestBody User user
     ) {
@@ -97,15 +109,18 @@ public class UserController {
                 .buildAndExpand(savedUser.getUserId())
                 .toUri();
 
-        GenericValidResponse response = new GenericValidResponse();
-        response.setMessage("User created successfully.");
+        GenericValidResponse response = new GenericValidResponse(
+                "User created successfully. Please check your e-mail for " +
+                "information on how to activate your account."
+        );
 
         return ResponseEntity.created(uri).body(response);
 
     }
 
     /**
-     * Updates an existing user.
+     * Updates an existing user. This endpoint requires the user to have the
+     * {@link Permission} "UPDATE_GENERAL" for the request to be authorized.
      *
      * @param userId         The unique identifier (Long) of the user to update.
      * @param updatedUserDTO The {@link UserUpdateDTO} object containing the
@@ -120,6 +135,7 @@ public class UserController {
      * also contains a message for users indicating said status.
      */
     @PutMapping(path="/users/{userId}")
+    @PreAuthorize("hasAuthority('UPDATE_GENERAL')")
     public ResponseEntity<GenericValidResponse> updateUserById(
             @Valid @RequestBody UserUpdateDTO updatedUserDTO,
             @PathVariable Long userId
@@ -127,15 +143,17 @@ public class UserController {
 
         userService.updateUser(userId, updatedUserDTO);
 
-        GenericValidResponse response = new GenericValidResponse();
-        response.setMessage("User updated successfully.");
+        GenericValidResponse response = new GenericValidResponse(
+                "User updated successfully."
+        );
 
         return ResponseEntity.ok(response);
 
     }
 
     /**
-     * Deletes a user by their ID.
+     * Deletes a user by their ID. This endpoint requires the user to have the
+     * {@link Permission} "DELETE_GENERAL" for the request to be authorized.
      *
      * @param userId The unique identifier (Long) of the user to delete.
      * @return A {@link ResponseEntity} with the according status code. 200 OK
@@ -145,14 +163,16 @@ public class UserController {
      * @throws ResourceNotFoundException if the user ID is not valid.
      */
     @DeleteMapping(path="/users/{userId}")
+    @PreAuthorize("hasAuthority('DELETE_GENERAL')")
     public ResponseEntity<GenericValidResponse> deleteSingleUser(
             @PathVariable Long userId
     ) {
 
         userService.deleteUser(userId);
 
-        GenericValidResponse response = new GenericValidResponse();
-        response.setMessage("User deleted successfully.");
+        GenericValidResponse response = new GenericValidResponse(
+                "User deleted successfully."
+        );
 
         return ResponseEntity.ok(response);
 

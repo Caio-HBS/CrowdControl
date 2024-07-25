@@ -4,10 +4,12 @@ import com.caiohbs.crowdcontrol.dto.SickNoteDTO;
 import com.caiohbs.crowdcontrol.dto.mapper.SickNoteDTOMapper;
 import com.caiohbs.crowdcontrol.exception.ResourceNotFoundException;
 import com.caiohbs.crowdcontrol.model.GenericValidResponse;
+import com.caiohbs.crowdcontrol.model.Permission;
 import com.caiohbs.crowdcontrol.model.SickNote;
 import com.caiohbs.crowdcontrol.service.SickNoteService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -30,12 +32,15 @@ public class SickNoteController {
     }
 
     /**
-     * Retrieves a list of all sick notes.
+     * Retrieves a list of all sick notes. This endpoint requires the user to
+     * have the {@link Permission} "READ_GENERAL" for the request to be
+     * authorized.
      *
      * @return A list of {@link SickNoteDTO} objects representing the found
      * sick notes.
      */
     @GetMapping(path="/sick-notes")
+    @PreAuthorize("hasAuthority('READ_GENERAL')")
     public ResponseEntity<List<SickNoteDTO>> getSickNoteList() {
 
         List<SickNoteDTO> sickNotes = sickNoteService.retrieveAllSickNotes()
@@ -46,7 +51,10 @@ public class SickNoteController {
     }
 
     /**
-     * Retrieves all sick notes to a given user.
+     * Retrieves all sick notes to a given user. This endpoint requires the user
+     * to either be the owner of the asset and have the {@link Permission}
+     * "READ_SELF", or have the {@link Permission} "READ_GENERAL" for the request to
+     * be authorized.
      *
      * @param userId The unique identifier (Long) for the user.
      * @return A {@link ResponseEntity} containing a list of {@link SickNoteDTO}
@@ -55,6 +63,9 @@ public class SickNoteController {
      * @throws ResourceNotFoundException if the user is not found.
      */
     @GetMapping(path="/users/{userId}/sick-notes")
+    @PreAuthorize(
+            "@securityUtils.getAuthUserId() == #userId and hasAuthority('READ_SELF') or hasAuthority('READ_GENERAL')"
+    )
     public ResponseEntity<List<SickNoteDTO>> getSickNotesForSingleUser(
             @PathVariable Long userId
     ) {
@@ -68,7 +79,9 @@ public class SickNoteController {
     }
 
     /**
-     * Creates a new sick note for a single user.
+     * Creates a new sick note for a single user. This endpoint requires the user
+     * to either have the {@link Permission} "CREATE_SICK_NOTE_SELF" or
+     * "CREATE_SICK_NOTE_GENERAL" for the request to be authorized.
      *
      * @param userId   The unique identifier (Long) for the user to which the
      *                 sick note belongs.
@@ -79,6 +92,9 @@ public class SickNoteController {
      * @throws ResourceNotFoundException if the user is not found.
      */
     @PostMapping(path="/users/{userId}/sick-notes")
+    @PreAuthorize(
+            "hasAuthority('CREATE_SICK_NOTE_SELF') or hasAuthority('CREATE_SICK_NOTE_GENERAL')"
+    )
     public ResponseEntity<GenericValidResponse> createSickNote(
             @PathVariable Long userId, @Valid @RequestBody SickNote sickNote
     ) {
@@ -92,15 +108,17 @@ public class SickNoteController {
 
         URI uri = UriComponentsBuilder.fromUriString(baseUri).build().toUri();
 
-        GenericValidResponse response = new GenericValidResponse();
-        response.setMessage("New sick note created successfully.");
-
+        GenericValidResponse response = new GenericValidResponse(
+                "New sick note created successfully."
+        );
         return ResponseEntity.created(uri).body(response);
 
     }
 
     /**
-     * Deletes a sick note based on the ID.
+     * Deletes a sick note based on the ID. This endpoint requires the user to
+     * have the {@link Permission} "DELETE_GENERAL" for the request to be
+     * authorized.
      *
      * @param sickNoteId The ID of the sick note to be deleted.
      * @return A {@link ResponseEntity} with the code 200 - OK, and a successful
@@ -109,15 +127,16 @@ public class SickNoteController {
      * @throws ResourceNotFoundException if the sick note is not found.
      */
     @DeleteMapping(path="/sick-notes/{sickNoteId}")
+    @PreAuthorize("hasAuthority('DELETE_GENERAL')")
     public ResponseEntity<GenericValidResponse> deleteSickNoteById(
             @PathVariable Long sickNoteId
     ) {
 
         sickNoteService.deleteSickNote(sickNoteId);
 
-        GenericValidResponse response = new GenericValidResponse();
-        response.setMessage("Sick note deleted successfully.");
-
+        GenericValidResponse response = new GenericValidResponse(
+                "Sick note deleted successfully."
+        );
         return ResponseEntity.ok(response);
 
     }
