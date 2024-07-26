@@ -19,6 +19,14 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+/**
+ * This filter is responsible for JWT authentication in the application.
+ * It extends {@link OncePerRequestFilter} to ensure that the filter is executed
+ * once per request. The filter extracts the JWT token from the Authorization
+ * header, validates it, and sets the authentication context if the token is valid.
+ *
+ * @see OncePerRequestFilter
+ */
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
@@ -32,6 +40,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         this.userDetailsService = userDetailsService;
     }
 
+    /**
+     * Filters each request, extracting and validating the JWT token, and setting
+     * the authentication context if the token is valid.
+     *
+     * @param request     the {@link HttpServletRequest} object.
+     * @param response    the {@link HttpServletResponse} object.
+     * @param filterChain the {@link FilterChain} object.
+     * @throws ServletException if a servlet error occurs.
+     * @throws IOException      if an I/O error occurs.
+     */
     @Override
     protected void doFilterInternal(
             @NonNull HttpServletRequest request,
@@ -77,15 +95,28 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
+    /**
+     * Sends an error response with the specified message and a 401 UNAUTHORIZED
+     * status.
+     *
+     * @param response the {@link HttpServletResponse} object.
+     * @param message  the error message to be sent in the response.
+     * @throws IOException if an I/O error occurs.
+     */
     private void sendErrorResponse(
             HttpServletResponse response, String message
     ) throws IOException {
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonResponse = objectMapper.writeValueAsString(
+                new GenericValidResponse(message)
+        );
+
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType("application/json");
-        ObjectMapper objectMapper = new ObjectMapper();
-        String jsonResponse = objectMapper.writeValueAsString(new GenericValidResponse(message));
         response.getWriter().write(jsonResponse);
         response.getWriter().flush();
+
     }
 
 }
