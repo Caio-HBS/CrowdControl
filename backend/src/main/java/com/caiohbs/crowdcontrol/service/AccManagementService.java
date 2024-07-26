@@ -96,7 +96,7 @@ public class AccManagementService {
     }
 
     private String generateCode() {
-
+        // TODO: change this to UUID.
         String validChars = "0123456789abcdefghijklmnopqrstuvwxyz";
 
         Random random = new SecureRandom();
