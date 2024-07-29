@@ -9,6 +9,7 @@ import com.caiohbs.crowdcontrol.model.GenericValidResponse;
 import com.caiohbs.crowdcontrol.model.Permission;
 import com.caiohbs.crowdcontrol.model.User;
 import com.caiohbs.crowdcontrol.service.AccManagementService;
+import com.caiohbs.crowdcontrol.service.EmailSenderService;
 import com.caiohbs.crowdcontrol.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -27,15 +28,17 @@ public class UserController {
     private final UserDTOMapper userDTOMapper;
     private final UserService userService;
     private final AccManagementService accManagementService;
+    private final EmailSenderService emailSenderService;
 
     public UserController(
             UserService userService,
             UserDTOMapper userDTOMapper,
-            AccManagementService accManagementService
-    ) {
+            AccManagementService accManagementService,
+            EmailSenderService emailSenderService) {
         this.userService = userService;
         this.userDTOMapper = userDTOMapper;
         this.accManagementService = accManagementService;
+        this.emailSenderService = emailSenderService;
     }
 
     /**
@@ -101,7 +104,12 @@ public class UserController {
     ) {
 
         User savedUser = userService.createUser(user);
-        accManagementService.createEmailCode(user, "ENABLE_ACC");
+        String code = accManagementService.createEmailCode(user, "ENABLE_ACC");
+
+        new Thread(() -> emailSenderService.sendEmail(
+                user.getUsername(), "ENABLE_ACC", code)
+        ).start();
+
 
         URI uri = ServletUriComponentsBuilder
                 .fromCurrentRequest()

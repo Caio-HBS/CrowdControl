@@ -9,6 +9,7 @@ public class EmailCode {
     @GeneratedValue
     private Long emailId;
     private String emailCode;
+    private boolean isCodeActive;
     @Enumerated(EnumType.STRING)
     private EmailType emailType;
     @ManyToOne
@@ -17,8 +18,11 @@ public class EmailCode {
     public EmailCode() {
     }
 
-    public EmailCode(String emailCode, EmailType emailType, User user) {
+    public EmailCode(
+            String emailCode, boolean isCodeActive, EmailType emailType, User user
+    ) {
         this.emailCode = emailCode;
+        this.isCodeActive = isCodeActive;
         this.emailType = emailType;
         this.user = user;
     }
@@ -54,4 +58,11 @@ public class EmailCode {
 
     }
 
+    public boolean isCodeActive() {
+        return isCodeActive;
+    }
+
+    public void setCodeActive(boolean codeActive) {
+        isCodeActive = codeActive;
+    }
 }
