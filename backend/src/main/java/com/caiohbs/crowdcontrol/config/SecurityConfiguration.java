@@ -48,8 +48,15 @@ public class SecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests((authorize) -> authorize
+                        .requestMatchers(HttpMethod.GET, "/v3/api-docs/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/swagger-ui/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/swagger-ui.html").permitAll()
+
+                        .requestMatchers(HttpMethod.GET, "/enable-acc").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/acc-recovery/{userEmail}").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/create-super-user").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth").permitAll()
-                        .requestMatchers(HttpMethod.PUT, "/enable_acc").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/reset-pass").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)

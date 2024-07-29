@@ -3,16 +3,26 @@ spring:
     name:
       crowdcontrol
   datasource:
-    url:
-    username:
-    password:
+    url: # DB url.
+    username: # DB username.
+    password: # DB password.
   jpa:
     open-in-view: false
     hibernate:
       ddl-auto: update
+  # NOTE: The following properties are only valid if you're using GMAIL.
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: # Your GMAIL username.
+    password: # Your GMAIL app password.
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
 logging:
   level:
     root: INFO
 crowdcontrol:
   vars:
     SECRET_KEY: "" # Define here your 256 secret key for JWT.
+    WEBSITE_ADDRESS: "http://localhost:8080" # Only valid for deploying locally.

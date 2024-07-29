@@ -123,7 +123,7 @@ public class RoleController {
      * also contains a message for users indicating said status.
      */
     @PutMapping(path="/roles/{roleId}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("@securityUtils.getAuthRole() == 'ADMIN'")
     public ResponseEntity<GenericValidResponse> updateRoleById(
             @RequestBody RoleUpdateDTO updateRoleDTO, @PathVariable Long roleId
     ) {
