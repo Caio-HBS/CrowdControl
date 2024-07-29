@@ -25,10 +25,9 @@ public class Role {
     public Role() {
     }
 
-    public Role(Long roleId, String roleName, int maxNumberOfUsers,
+    public Role(String roleName, int maxNumberOfUsers,
                 double salary, List<String> permissions
     ) {
-        this.roleId = roleId;
         this.roleName = roleName;
         this.maxNumberOfUsers = maxNumberOfUsers;
         this.salary = salary;

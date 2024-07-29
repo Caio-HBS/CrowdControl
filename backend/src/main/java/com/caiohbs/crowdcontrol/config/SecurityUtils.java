@@ -16,6 +16,7 @@ public class SecurityUtils {
      * not.
      */
     public static Long getAuthUserId() {
+
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (
                 authentication != null && authentication.isAuthenticated() &&
@@ -25,5 +26,29 @@ public class SecurityUtils {
             return userDetails.getUserId();
         }
         return null;
+
     }
+
+    /**
+     * Returns the user role so that the @PreAuthorize annotations on endpoints
+     * may check credentials on user.
+     *
+     * @return The ID of the user if they are authenticated or null if they are
+     * not.
+     */
+    public static String getAuthRole() {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (
+                authentication != null && authentication.isAuthenticated() &&
+                !authentication.getPrincipal().equals("anonymousUser")
+        ) {
+            User userDetails = (User) authentication.getPrincipal();
+
+            return userDetails.getRole().getRoleName();
+        }
+        return null;
+
+    }
+
 }
