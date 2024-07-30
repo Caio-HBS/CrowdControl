@@ -60,11 +60,10 @@ public class User implements UserDetails {
     }
 
     public User(
-            Long userId, String firstName, String lastName, String email,
+            String firstName, String lastName, String email,
             String password, LocalDate birthDate, LocalDate localDate,
             List<Payment> payments, List<SickNote> sickNotes, Role role
     ) {
-        this.userId = userId;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
