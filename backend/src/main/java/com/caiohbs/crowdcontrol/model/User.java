@@ -60,9 +60,8 @@ public class User implements UserDetails {
     }
 
     public User(
-            String firstName, String lastName, String email,
-            String password, LocalDate birthDate, LocalDate localDate,
-            List<Payment> payments, List<SickNote> sickNotes, Role role
+            String firstName, String lastName, String email, String password, LocalDate birthDate, LocalDate localDate,
+            UserInfo userInfo, List<Payment> payments, List<SickNote> sickNotes, Role role
     ) {
         this.firstName = firstName;
         this.lastName = lastName;
@@ -70,6 +69,7 @@ public class User implements UserDetails {
         this.password = encryptPass(password);
         this.birthDate = birthDate;
         this.registerDate = localDate;
+        this.userInfo = userInfo;
         this.payments = payments;
         this.sickNotes = sickNotes;
         this.role = role;

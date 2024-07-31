@@ -43,10 +43,8 @@ public class AccManagementService {
      * Authenticates a user based on provided credentials.
      *
      * @param request The authentication request containing username and password.
-     * @return An authentication response containing a JWT token if successful,
-     * otherwise throws an exception.
-     * @throws ValidationErrorException  If authentication fails due to invalid
-     *                                   credentials.
+     * @return An authentication response containing a JWT token if successful, otherwise throws an exception.
+     * @throws ValidationErrorException  If authentication fails due to invalid credentials.
      * @throws ResourceNotFoundException If the user is not found.
      */
     public AuthenticationResponse authenticate(
@@ -55,9 +53,7 @@ public class AccManagementService {
 
         try {
             authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            request.getUsername(), request.getPassword()
-                    )
+                    new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
             );
         } catch (AuthenticationException e) {
             throw new ValidationErrorException(e.getMessage());
@@ -75,8 +71,7 @@ public class AccManagementService {
      * Generates and persists an email verification code for a user.
      *
      * @param user      The user for whom to generate the code.
-     * @param emailType The type of email for which the code is intended
-     *                  ({@code ENABLE_ACC} or {@code RECOV_PASS}).
+     * @param emailType The type of email for which the code is intended ({@code ENABLE_ACC} or {@code RECOV_PASS}).
      * @return The generated email verification code.
      * @throws ResourceNotFoundException If the provided email type is invalid.
      */
@@ -92,9 +87,7 @@ public class AccManagementService {
 
         String generatedCode = generateCode();
 
-        EmailCode newEmailCode = new EmailCode(
-                generatedCode, true, EmailType.valueOf(emailType), user
-        );
+        EmailCode newEmailCode = new EmailCode(generatedCode, true, EmailType.valueOf(emailType), user);
         emailCodeRepository.save(newEmailCode);
 
         return generatedCode;
@@ -118,10 +111,8 @@ public class AccManagementService {
         userRepository.save(user);
 
         Permission[] permissions = Permission.values();
-        Role adminRole = new Role(
-                "ADMIN", 1, 0,
-                Arrays.stream(permissions)
-                        .map(Enum::name).collect(Collectors.toList())
+        Role adminRole = new Role("ADMIN", 1, 0,
+                Arrays.stream(permissions).map(Enum::name).collect(Collectors.toList())
         );
 
         roleRepository.save(adminRole);
@@ -132,12 +123,10 @@ public class AccManagementService {
     }
 
     /**
-     * Validates an email verification code and performs user actions based on
-     * the code type.
+     * Validates an email verification code and performs user actions based on the code type.
      *
      * @param emailCode The email verification code to be validated.
-     * @return True if the code is valid and the corresponding action is successful,
-     * otherwise throws an exception.
+     * @return True if the code is valid and the corresponding action is successful, otherwise throws an exception.
      * @throws ResourceNotFoundException If the provided email code is not found.
      * @throws ValidationErrorException  If the code has already been used.
      */
@@ -166,6 +155,7 @@ public class AccManagementService {
             return true;
         } else if (Objects.equals(foundCode.getEmailType().toString(), "RECOV_PASS")) {
             foundCode.setCodeActive(false);
+            emailCodeRepository.save(foundCode);
 
             return true;
         } else {
@@ -178,10 +168,8 @@ public class AccManagementService {
      * Resets a user's password based on the provided information in the DTO.
      *
      * @param user The user whose password needs to be reset.
-     * @param dto  The data transfer object containing new password and confirmation
-     *             details.
-     * @throws ValidationErrorException If the new password and confirm password
-     *                                  do not match.
+     * @param dto  The data transfer object containing new password and confirmation details.
+     * @throws ValidationErrorException If the new password and confirm password do not match.
      */
     public void resetPassword(
             User user, UserUpdateDTO dto
@@ -202,8 +190,7 @@ public class AccManagementService {
      * Unlocks a user.
      *
      * @param userId The identifier of the user to unlock.
-     * @throws ResourceNotFoundException If the user with the provided ID is not
-     *                                   found.
+     * @throws ResourceNotFoundException If the user with the provided ID is not found.
      */
     public void unlockUser(Long userId) {
 
