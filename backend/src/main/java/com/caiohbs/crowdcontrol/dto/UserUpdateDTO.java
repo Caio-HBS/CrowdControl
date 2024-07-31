@@ -14,12 +14,7 @@ public record UserUpdateDTO(
         boolean isNewPasswordPresent,
 
         String role,
-        boolean isRolesPresent,
+        boolean isRolesPresent
 
-        boolean isEnabled,
-        boolean isChangeEnabledPresent,
-
-        boolean isAccountNonLocked,
-        boolean isChangeAccountLockedPresent
 ) {
 }

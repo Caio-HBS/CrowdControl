@@ -35,10 +35,8 @@ public class UserService {
      * Creates a new user through the repository.
      *
      * @param user User object containing the data of the user to be created.
-     * @return The newly created User object, or throws an exception if the
-     * username is already in use.
-     * @throws NameTakenException If the provided email is already registered
-     *                            in the system.
+     * @return The newly created User object, or throws an exception if the username is already in use.
+     * @throws NameTakenException If the provided email is already registered in the system.
      */
     public User createUser(User user) throws NameTakenException {
 
@@ -57,13 +55,11 @@ public class UserService {
      * Retrieves a single user from the database based on the ID.
      *
      * @param userId The ID of the user to retrieve.
-     * @return An {@link Optional} object containing the found user, or an empty
-     * Optional if the user is not found.
+     * @return An {@link Optional} object containing the found user, or an empty {@link Optional} if the user is not
+     * found.
      */
     public Optional<User> retrieveSingleUser(Long userId) {
-
         return userRepository.findById(userId);
-
     }
 
     /**
@@ -72,22 +68,17 @@ public class UserService {
      * @return A {@link List} containing all the users present in the database.
      */
     public List<User> retrieveAllUsers() {
-
         return userRepository.findAll();
-
     }
 
     /**
      * Updates a user's information in the database.
      *
      * @param userId     The ID of the user to update.
-     * @param updateInfo A {@link UserUpdateDTO} object containing the update
-     *                   information.
-     * @throws ResourceNotFoundException If the user or role being assigned is
-     *                                   not found.
-     * @throws ValidationErrorException  If the provided old password is invalid
-     *                                   or the new password and confirm password
-     *                                   do not match.
+     * @param updateInfo A {@link UserUpdateDTO} object containing the update information.
+     * @throws ResourceNotFoundException If the user or role being assigned is not found.
+     * @throws ValidationErrorException  If the provided old password is invalid or the new password and confirm
+     *                                   password do not match.
      */
     public void updateUser(
             Long userId, UserUpdateDTO updateInfo
@@ -109,33 +100,19 @@ public class UserService {
                 Objects.equals(updateInfo.newPassword(), updateInfo.confirmNewPassword())
             ) {
                 foundUser.setPassword(updateInfo.newPassword());
-            } else if (
-                    !encoder.matches(updateInfo.oldPassword(), foundUser.getPassword())
-            ) {
+            } else if (!encoder.matches(updateInfo.oldPassword(), foundUser.getPassword())) {
                 throw new ValidationErrorException("Old password is invalid.");
-            } else if (
-                    !Objects.equals(updateInfo.newPassword(), updateInfo.confirmNewPassword())
-            ) {
-                throw new ValidationErrorException(
-                        "New password and confirm password do not match."
-                );
+            } else if (!Objects.equals(updateInfo.newPassword(), updateInfo.confirmNewPassword())) {
+                throw new ValidationErrorException("New password and confirm password do not match.");
             }
         }
         if (updateInfo.isRolesPresent()) {
-            Role foundRole = roleRepository.findByRoleName(
-                    updateInfo.role().toUpperCase()
-            );
+            Role foundRole = roleRepository.findByRoleName(updateInfo.role().toUpperCase());
 
             if (foundRole == null) {
                 throw new ResourceNotFoundException("Role not found.");
             }
             assignRole(foundUser, foundRole.getRoleId());
-        }
-        if (updateInfo.isChangeEnabledPresent()) {
-            foundUser.setIsEnabled(updateInfo.isEnabled());
-        }
-        if (updateInfo.isChangeAccountLockedPresent()) {
-            foundUser.setIsAccountNonLocked(updateInfo.isAccountNonLocked());
         }
         userRepository.save(foundUser);
 
@@ -146,8 +123,7 @@ public class UserService {
      *
      * @param user   The {@link User} object to be assigned a role.
      * @param roleId The ID of the role to be assigned.
-     * @throws RoleLimitExceededException If the role has reached its maximum
-     *                                    number of users.
+     * @throws RoleLimitExceededException If the role has reached its maximum number of users.
      */
     public void assignRole(
             User user, long roleId
@@ -182,8 +158,7 @@ public class UserService {
      * Deletes a user from the database based on the ID.
      *
      * @param userId The ID of the user to be deleted.
-     * @throws ResourceNotFoundException If the user with the provided ID is not
-     *                                   found.
+     * @throws ResourceNotFoundException If the user with the provided ID is not found.
      */
     public void deleteUser(Long userId) throws ResourceNotFoundException {
 
