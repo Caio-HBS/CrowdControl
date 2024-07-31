@@ -36,7 +36,7 @@ class UserServiceTest {
     UserService userService;
 
     private final User newUser = new User("John", "Doe", "test@email.com", "789",
-            LocalDate.now().minusYears(18), LocalDate.now(), List.of(), List.of(), null);
+            LocalDate.now().minusYears(18), LocalDate.now(), null, List.of(), List.of(), null);
 
     private final Role newRole = new Role("TEST_ROLE", 1, 1.0, List.of("DELETE_GENERAL"));
 
@@ -96,7 +96,7 @@ class UserServiceTest {
 
         User user2 = new User(
                 newUser.getFirstName(), newUser.getLastName(), "test2@email.com", newUser.getPassword(),
-                newUser.getBirthDate(), newUser.getRegisterDate(), List.of(), List.of(), null
+                newUser.getBirthDate(), newUser.getRegisterDate(), null, List.of(), List.of(), null
         );
 
         when(userRepository.findAll()).thenReturn(List.of(newUser, user2));
@@ -124,9 +124,7 @@ class UserServiceTest {
     @DisplayName("Should successfully update username (e-mail)")
     void updateUser_SuccessUsername() {
 
-        UserUpdateDTO updateDTO = new UserUpdateDTO(
-                "e@mail.com", true, "", "", "", false, "", false
-        );
+        UserUpdateDTO updateDTO = new UserUpdateDTO("e@mail.com", true, "", "", "", false, "", false);
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(newUser));
 
@@ -141,9 +139,7 @@ class UserServiceTest {
     @DisplayName("Should raise exception when trying to find User")
     void updateUser_FailedUsername() throws ResourceNotFoundException {
 
-        UserUpdateDTO updateDTO = new UserUpdateDTO(
-                "e@mail.com", true, "123", "123", "321", true, "ADMIN", true
-        );
+        UserUpdateDTO updateDTO = new UserUpdateDTO("e@mail.com", true, "123", "123", "321", true, "ADMIN", true);
 
         when(userRepository.findById(1L)).thenReturn(Optional.empty());
 
@@ -208,9 +204,7 @@ class UserServiceTest {
     @DisplayName("Should successfully update user role")
     void updateUser_SuccessRole() {
 
-        UserUpdateDTO updateDTO = new UserUpdateDTO(
-                "", false, "123", "123", "789", false, "TEST_ROLE", true
-        );
+        UserUpdateDTO updateDTO = new UserUpdateDTO("", false, "123", "123", "789", false, "TEST_ROLE", true);
         newRole.setRoleId(1L);
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(newUser));
@@ -228,9 +222,7 @@ class UserServiceTest {
     @DisplayName("Should raise exception when trying to find Role")
     void updateUser_Failed_Role() {
 
-        UserUpdateDTO updateDTO = new UserUpdateDTO(
-                "", false, "123", "123", "789", false, "WRONG", true
-        );
+        UserUpdateDTO updateDTO = new UserUpdateDTO("", false, "123", "123", "789", false, "WRONG", true);
         newRole.setRoleId(1L);
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(newUser));

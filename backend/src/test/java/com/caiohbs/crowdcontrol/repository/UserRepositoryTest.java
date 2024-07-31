@@ -80,7 +80,7 @@ class UserRepositoryTest {
     ) {
 
         User newUser = new User(
-                firstName, lastName, email, password, birthDate, localDate,
+                firstName, lastName, email, password, birthDate, localDate, null,
                 payments, sickNotes, role
         );
         this.entityManager.persist(newUser);

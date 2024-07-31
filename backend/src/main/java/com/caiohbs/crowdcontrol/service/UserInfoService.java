@@ -27,18 +27,15 @@ public class UserInfoService {
     }
 
     /**
-     * Creates and persists additional user information for a given user ID.
-     * This method attempts to create a new UserInfo object associated with the
-     * provided userId.
+     * Creates and persists additional user information for a given user ID. This method attempts to create a new
+     * {@link UserInfo} object associated with the provided userId.
      *
      * @param userId   The ID of the user for whom to create user information.
-     * @param userInfo The user information object containing details like profile
-     *                 picture filename, pronouns, bio, and nationality.
+     * @param userInfo The user information object containing details like profile picture filename, pronouns, bio and
+     *                 nationality.
      * @return The newly created and persisted UserInfo object.
-     * @throws ResourceNotFoundException If a user with the provided userId is
-     *                                   not found.
-     * @throws ValidationErrorException  If the user already has existing user
-     *                                   information.
+     * @throws ResourceNotFoundException If a user with the provided userId is not found.
+     * @throws ValidationErrorException  If the user already has existing user information.
      */
     public UserInfo createInfo(
             Long userId, UserInfo userInfo
@@ -52,8 +49,7 @@ public class UserInfoService {
 
         if (foundUser.get().getUserInfo() != null) {
             throw new ValidationErrorException(
-                    "User info already initialized. " +
-                    "Please use the update endpoint to make changes to it."
+                    "User info already initialized. Please use the update endpoint to make changes to it."
             );
         }
 
@@ -69,13 +65,12 @@ public class UserInfoService {
     }
 
     /**
-     * Retrieves user information for a given user ID.
-     * This method fetches the UserInfo associated with the specified userId.
+     * Retrieves user information for a given user ID. This method fetches the UserInfo associated with the specified
+     * userId.
      *
      * @param userId The ID of the user whose information to retrieve.
      * @return The UserInfo object for the specified user.
-     * @throws ResourceNotFoundException If no user is found with the provided
-     *                                   userId.
+     * @throws ResourceNotFoundException If no user is found with the provided userId.
      */
     public UserInfo retrieveInfo(Long userId) {
 
@@ -83,6 +78,8 @@ public class UserInfoService {
 
         if (foundUser.isEmpty()) {
             throw new ResourceNotFoundException("User not found.");
+        } else if (foundUser.get().getUserInfo() == null) {
+            throw new ResourceNotFoundException("User info not found.");
         }
 
         return foundUser.get().getUserInfo();
@@ -90,19 +87,16 @@ public class UserInfoService {
     }
 
     /**
-     * Updates user information for a given user ID.
-     * This method allows updating specific fields of the user information a
-     * ssociated with the provided userId.
+     * Updates user information for a given user ID. This method allows updating specific fields of the user
+     * information associated with the provided userId.
      *
      * @param userId        The ID of the user whose information to update.
      * @param updateInfoDTO The DTO object containing fields to be updated.
-     * @return A message indicating success ("Success") or the converted image
-     * filename (if profile picture was updated).
-     * @throws ResourceNotFoundException If no user is found with the provided
-     *                                   userId.
-     * @throws ValidationErrorException  If the user has no existing user
-     *                                   information or an exception occurs
-     *                                   during pronoun update.
+     * @return A message indicating success ("Success") or the converted image filename (if profile picture was
+     * updated).
+     * @throws ResourceNotFoundException If no user is found with the provided userId.
+     * @throws ValidationErrorException  If the user has no existing user information or an exception occurs during
+     *                                   pronoun update.
      */
     public String updateInfo(
             Long userId, UserInfoUpdateDTO updateInfoDTO
@@ -145,16 +139,12 @@ public class UserInfoService {
     }
 
     /**
-     * This method receives the original file name WITH THE EXTENSION INCLUDED
-     * and returns the new name with randomized characters to prevent
-     * name-clashing when saving files.
-     * NOTE: the files WILL NOT be stored by Spring, the front-end will simply
-     * receive the new name for the file that is to be stored and served by
-     * another app in the stack. This whole method just facilitates saving the
-     * file path to database.
+     * This method receives the original file name WITH THE EXTENSION INCLUDED and returns the new name with
+     * randomized characters to prevent name-clashing when saving files. NOTE: the files WILL NOT be stored by
+     * Spring, the front-end will simply receive the new name for the file that is to be stored and served by another
+     * app in the stack. This whole method just facilitates saving the file path to database.
      *
-     * @param originalFileName The original name of the file, including the
-     *                         original extension.
+     * @param originalFileName The original name of the file, including the original extension.
      * @return The result of the generation, including the extension of
      * the file at the end.
      */
