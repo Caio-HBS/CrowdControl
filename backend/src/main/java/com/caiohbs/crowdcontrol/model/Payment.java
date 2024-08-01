@@ -30,10 +30,7 @@ public class Payment {
         this.paymentDate = LocalDate.now();
     }
 
-    public Payment(
-            Long paymentId, User user,
-            double paymentAmount
-    ) {
+    public Payment(Long paymentId, User user, double paymentAmount) {
         this.paymentId = paymentId;
         this.user = user;
         this.paymentAmount = paymentAmount;
@@ -78,7 +75,7 @@ public class Payment {
                "paymentId=" + paymentId +
                ", user=" + user +
                ", paymentAmount=" + paymentAmount +
-               "paymentDate=" + paymentDate +
+               ", paymentDate=" + paymentDate +
                '}';
     }
 
