@@ -17,10 +17,7 @@ public class PaymentService {
     private final UserRepository userRepository;
     private final PaymentRepository paymentRepository;
 
-    public PaymentService(
-            UserRepository userRepository,
-            PaymentRepository paymentRepository
-    ) {
+    public PaymentService(UserRepository userRepository, PaymentRepository paymentRepository) {
         this.userRepository = userRepository;
         this.paymentRepository = paymentRepository;
     }
@@ -30,12 +27,9 @@ public class PaymentService {
      *
      * @param payment The payment information containing the payment amount.
      * @param userId  The ID of the user for whom the payment is being created.
-     * @throws ResourceNotFoundException If the user with the provided ID is not
-     *                                   found.
+     * @throws ResourceNotFoundException If the user with the provided ID is not found.
      */
-    public void createPayment(
-            Payment payment, Long userId
-    ) throws ResourceNotFoundException {
+    public void createPayment(Payment payment, Long userId) throws ResourceNotFoundException {
 
         Optional<User> foundUser = userRepository.findById(userId);
 
@@ -43,10 +37,7 @@ public class PaymentService {
             throw new ResourceNotFoundException("User not found");
         }
 
-        Payment newPayment = new Payment(
-                foundUser.get(), payment.getPaymentAmount()
-        );
-
+        Payment newPayment = new Payment(foundUser.get(), payment.getPaymentAmount());
         paymentRepository.save(newPayment);
     }
 
@@ -55,24 +46,18 @@ public class PaymentService {
      * role.
      *
      * @param roleId The ID of the role for whom the auto payment is being created.
-     * @throws ResourceNotFoundException If the role with the provided ID is not
-     *                                   found.
+     * @throws ResourceNotFoundException If the role with the provided ID is not found.
      */
-    public void createPaymentForRole(
-            Long roleId
-    ) throws ResourceNotFoundException {
+    public void createPaymentForRole(Long roleId) throws ResourceNotFoundException {
 
-        List<String> foundUsersInRole = userRepository
-                .findUsernamesByRoleId(roleId);
+        List<String> foundUsersInRole = userRepository.findUsernamesByRoleId(roleId);
 
         if (!foundUsersInRole.isEmpty()) {
             for (String username : foundUsersInRole) {
                 Optional<User> foundUser = userRepository.findByEmail(username);
 
                 if (foundUser.isPresent()) {
-                    Payment newPayment = new Payment(
-                            foundUser.get(), foundUser.get().getRole().getSalary()
-                    );
+                    Payment newPayment = new Payment(foundUser.get(), foundUser.get().getRole().getSalary());
                     paymentRepository.save(newPayment);
                 }
             }
@@ -86,9 +71,7 @@ public class PaymentService {
      * Returns all the payments registered on the database.
      */
     public List<Payment> retrieveAllPayments() {
-
         return paymentRepository.findAll();
-
     }
 
     /**
@@ -97,23 +80,19 @@ public class PaymentService {
      * @param userId The ID of the user you wish to see the payments for.
      */
     public List<Payment> retrieveAllPaymentsForSingleUser(Long userId) {
-
         return paymentRepository.findByUserUserId(userId);
-
     }
 
     /**
      * Deletes a payment though it's id.
      *
      * @param paymentId The ID of the payment to be deleted.
-     * @throws ResourceNotFoundException If the payment with the provided ID is
-     *                                   not found.
+     * @throws ResourceNotFoundException If the payment with the provided ID is not found.
      */
     public void deletePayment(Long paymentId) throws ResourceNotFoundException {
 
         try {
-            Payment foundPayment = paymentRepository
-                    .findById(paymentId).orElseThrow();
+            Payment foundPayment = paymentRepository.findById(paymentId).orElseThrow();
             paymentRepository.delete(foundPayment);
         } catch (NoSuchElementException e) {
             throw new ResourceNotFoundException("Payment not found.");
