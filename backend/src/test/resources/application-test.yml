@@ -2,7 +2,8 @@ spring:
   datasource:
     url: jdbc:h2:mem:testdb
     driver-class-name: org.h2.Driver
-    username: testdb
-    password:
-  jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
+    username: ${H2_USERNAME}
+    password: ${H2_PASSWORD}
+crowdcontrol:
+  vars:
+    SECRET_KEY: ${SECRET_ENCRYPTION_KEY}

@@ -16,6 +16,10 @@ jobs:
         distribution: 'temurin'
 
     - name: Build and test
+      env:
+        H2_USERNAME: ${{ secrets.H2_USERNAME }}
+        H2_PASSWORD: ${{ secrets.H2_PASSWORD }}
+        SECRET_ENCRYPTION_KEY: ${{ secrets.SECRET_ENCRYPTION_KEY }}
       run: |
         cd backend
         mvn test
