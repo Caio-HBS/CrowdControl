@@ -1,0 +1,25 @@
+name: Backend deploy CI
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up JDK 21
+      uses: actions/setup-java@v3
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+
+    - name: Build and test
+      env:
+        H2_USERNAME: ${{ secrets.H2_USERNAME }}
+        H2_PASSWORD: ${{ secrets.H2_PASSWORD }}
+        SECRET_ENCRYPTION_KEY: ${{ secrets.SECRET_ENCRYPTION_KEY }}
+      run: |
+        cd backend
+        mvn test
