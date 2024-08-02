@@ -4,6 +4,10 @@ spring:
     driver-class-name: org.h2.Driver
     username: ${H2_USERNAME}
     password: ${H2_PASSWORD}
+  mail:
+    username: ${EMAIL_USERNAME}
+    password: ${EMAIL_PASSWORD}
 crowdcontrol:
   vars:
     SECRET_KEY: ${SECRET_ENCRYPTION_KEY}
+    WEBSITE_ADDRESS: ${WEBSITE_ADDRESS}
