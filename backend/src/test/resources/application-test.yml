@@ -5,8 +5,16 @@ spring:
     username: ${H2_USERNAME}
     password: ${H2_PASSWORD}
   mail:
+    host: smtp.gmail.com
+    port: 587
     username: ${EMAIL_USERNAME}
     password: ${EMAIL_PASSWORD}
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
 crowdcontrol:
   vars:
     SECRET_KEY: ${SECRET_ENCRYPTION_KEY}

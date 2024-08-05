@@ -15,11 +15,14 @@ jobs:
         java-version: '21'
         distribution: 'temurin'
 
-    - name: Build and test
+    - name: Build and test Spring Backend
       env:
         H2_USERNAME: ${{ secrets.H2_USERNAME }}
         H2_PASSWORD: ${{ secrets.H2_PASSWORD }}
         SECRET_ENCRYPTION_KEY: ${{ secrets.SECRET_ENCRYPTION_KEY }}
+        EMAIL_USERNAME: ${{ secrets.EMAIL_USERNAME }}
+        EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+        WEBSITE_ADDRESS: ${{ secrets.WEBSITE_ADDRESS }}
       run: |
         cd backend
         mvn test
