@@ -7,6 +7,9 @@ spring:
   mail:
     username: ${EMAIL_USERNAME}
     password: ${EMAIL_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
 crowdcontrol:
   vars:
     SECRET_KEY: ${SECRET_ENCRYPTION_KEY}

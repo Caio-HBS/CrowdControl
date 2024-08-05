@@ -22,6 +22,8 @@ class UserRepositoryTest {
     EntityManager entityManager;
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    private RoleRepository roleRepository;
 
     @Test
     @DisplayName("Should get a populated List of users successfully from DB")
@@ -83,7 +85,7 @@ class UserRepositoryTest {
                 firstName, lastName, email, password, birthDate, localDate, null,
                 payments, sickNotes, role
         );
-        this.entityManager.persist(newUser);
+        userRepository.save(newUser);
 
     }
 
@@ -93,7 +95,7 @@ class UserRepositoryTest {
     ) {
 
         Role newRole = new Role(roleName, maxNumberOfUsers, salary, permissions);
-        this.entityManager.persist(newRole);
+        roleRepository.save(newRole);
 
         return newRole;
 
