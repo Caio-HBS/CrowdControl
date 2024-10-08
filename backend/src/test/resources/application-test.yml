@@ -1,3 +1,7 @@
+crowdcontrol:
+  vars:
+    SECRET_KEY: "6a26215b3c7525256179415424737a2e766f493d5f654e716658793863274079"
+    WEBSITE_ADDRESS: ${WEBSITE_ADDRESS}
 spring:
   datasource:
     url: jdbc:h2:mem:testdb
@@ -15,7 +19,4 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create-drop
-crowdcontrol:
-  vars:
-    SECRET_KEY: ${SECRET_ENCRYPTION_KEY}
-    WEBSITE_ADDRESS: ${WEBSITE_ADDRESS}
+
