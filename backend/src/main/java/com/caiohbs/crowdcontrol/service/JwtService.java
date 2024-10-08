@@ -110,8 +110,6 @@ public class JwtService {
             Map<String, Object> extraClaims, User userDetails
     ) {
 
-        extraClaims.put("userId", userDetails.getUserId());
-
         return Jwts.builder()
                 .claims()
                 .subject(userDetails.getUsername())
